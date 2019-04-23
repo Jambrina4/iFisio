@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "312089163274",
+    "firebase_url": "https://ifisio-4220a.firebaseio.com",
+    "project_id": "ifisio-4220a",
+    "storage_bucket": "ifisio-4220a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312089163274:android:34f507fc1a371777",
+        "android_client_info": {
+          "package_name": "com.ojambrina.ifisio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "312089163274-toq0qca4v0phbapiigh9sf3qecc5bj8j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ojambrina.ifisio",
+            "certificate_hash": "c0f245d0f0df8f042a1c27e86828cb8ff8f5a159"
+          }
+        },
+        {
+          "client_id": "312089163274-nv47a4fltc0ls3cb8j8eds7fphis2uvj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO4EJpeh3b47CMlOX7akXG_xrpOXLTcPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "312089163274-nv47a4fltc0ls3cb8j8eds7fphis2uvj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

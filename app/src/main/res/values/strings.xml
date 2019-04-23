@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">iFisio</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="remember_me">Recordarme</string>
+    <string name="login">Log In</string>
+    <string name="register_forgot_pass">Registrarse | Olvidé mi contraseña</string>
+    <string name="name">Nombre</string>
+    <string name="surname">Apellidos</string>
+    <string name="dni">DNI</string>
+    <string name="have_account">Ya tengo cuenta. Entrar</string>
+    <string name="register">Registro</string>
+    <string name="password_repeat">Repetir contraseña</string>
+    <string name="phone">Teléfono</string>
+</resources>
