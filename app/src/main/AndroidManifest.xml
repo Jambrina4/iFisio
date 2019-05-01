@@ -11,13 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".UI.login.RegisterActivity"
+        <activity
+            android:name=".UI.login.RegisterActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".UI.HomeActivity"
+        <activity
+            android:name=".UI.HomeActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".UI.login.LoginActivity"
+        <activity
+            android:name=".UI.login.LoginActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SplashActivity"
+        <activity
+            android:name=".SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

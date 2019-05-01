@@ -3,37 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     tools:context=".UI.login.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/gradient_background"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:weightSum="100">
 
         <EditText
             android:id="@+id/edit_name"
-            android:layout_marginTop="64dp"
+            style="@style/RegisterEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/RegisterEditText"
-            android:hint="@string/name"/>
+            android:layout_marginTop="64dp"
+            android:hint="@string/name"
+            android:maxLines="1" />
 
         <EditText
             android:id="@+id/edit_surname"
             style="@style/RegisterEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/surname"/>
+            android:hint="@string/surname"
+            android:maxLines="1" />
 
         <EditText
             android:id="@+id/edit_DNI"
             style="@style/RegisterEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/dni" />
+            android:hint="@string/dni"
+            android:maxLines="1" />
 
         <EditText
             android:id="@+id/edit_email"
@@ -41,7 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email"
-            android:inputType="textEmailAddress"/>
+            android:inputType="textEmailAddress"
+            android:maxLines="1" />
 
         <EditText
             android:id="@+id/edit_phone"
@@ -49,7 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/phone"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:maxLines="1" />
 
         <EditText
             android:id="@+id/edit_password"
@@ -57,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:maxLines="1" />
 
         <EditText
             android:id="@+id/edit_password_repeat"
@@ -65,9 +71,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password_repeat"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:maxLines="1" />
 
         <LinearLayout
+            android:id="@+id/layout_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="32dp"
@@ -78,10 +86,12 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:text="@string/register"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/black" />
         </LinearLayout>
 
         <TextView
+            android:id="@+id/have_account"
             style="@style/RegisterTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
