@@ -1,8 +1,10 @@
 package com.ojambrina.ifisio.UI.clinics;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +26,8 @@ public class CreateClinicActivity extends AppCompatActivity {
     EditText editClinicDirection;
     @BindView(R.id.button_clinic_register)
     Button buttonClinicRegister;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     DatabaseReference databaseReference;
 
@@ -36,6 +40,7 @@ public class CreateClinicActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         context = this;
 
+        setToolbar();
         listeners();
     }
 
@@ -47,10 +52,23 @@ public class CreateClinicActivity extends AppCompatActivity {
                 String direction = editClinicDirection.getText().toString().trim();
                 addClinic(name, direction);
 
-                //Intent intent = new Intent(context, ClinicActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(context, ClinicActivity.class);
+                startActivity(intent);
             }
         });
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
+
+    private void setToolbar() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void addClinic(String name, String direction) {

@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     tools:context=".UI.login.LoginActivity">
 
     <LinearLayout
@@ -40,7 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:textColor="@android:color/white" />
 
             <EditText
                 android:id="@+id/login_password"
@@ -48,7 +48,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColor="@android:color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"

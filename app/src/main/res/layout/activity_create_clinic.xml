@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     tools:context=".UI.clinics.CreateClinicActivity">
+
+    <include layout="@layout/toolbar" />
 
     <EditText
         android:id="@+id/edit_clinic_name"
@@ -15,7 +16,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="32dp"
-        android:hint="@string/edit_clinic_name" />
+        android:hint="@string/edit_clinic_name"
+        android:textColor="@android:color/white" />
 
     <EditText
         android:id="@+id/edit_clinic_direction"
@@ -25,7 +27,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:hint="@string/edit_direction" />
+        android:hint="@string/edit_direction"
+        android:textColor="@android:color/white" />
 
     <Button
         android:id="@+id/button_clinic_register"

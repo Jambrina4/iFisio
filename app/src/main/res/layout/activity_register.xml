@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     tools:context=".UI.login.RegisterActivity">
 
     <LinearLayout
@@ -21,7 +20,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="64dp"
             android:hint="@string/name"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textColor="@android:color/white" />
 
         <EditText
             android:id="@+id/edit_surname"
@@ -29,7 +29,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/surname"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textColor="@android:color/white" />
 
         <EditText
             android:id="@+id/edit_DNI"
