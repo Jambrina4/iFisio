@@ -12,4 +12,9 @@
     <string name="register">Registro</string>
     <string name="password_repeat">Repetir contraseña</string>
     <string name="phone">Teléfono</string>
+    <string name="text_add_clinic">Agregar una clínica</string>
+    <string name="text_connect_clinic">Conectarse a una clínica</string>
+    <string name="edit_clinic_name">Nombre de la clinica</string>
+    <string name="edit_direction">Dirección</string>
+    <string name="clinic_register">Registrar clínica</string>
 </resources>

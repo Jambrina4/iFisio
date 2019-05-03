@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ojambrina.ifisio">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".UI.clinics.ConnectClinicActivity"></activity>
+        <activity android:name=".UI.clinics.CreateClinicActivity" />
         <activity
             android:name=".UI.login.RegisterActivity"
             android:screenOrientation="portrait" />
