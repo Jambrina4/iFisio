@@ -20,4 +20,7 @@
     <string name="clinic_register">Registrar clínica</string>
     <string name="edit_description">Introduce una descripción (opcional)</string>
     <string name="edit_cif">CIF (Opcional)</string>
+    <string name="enter_email">Introduce tu correo electrónico y te enviaremos una contraseña nueva</string>
+    <string name="password_forgotten">¿Has olvidado tu contraseña?</string>
+    <string name="text_send">Enviar</string>
 </resources>

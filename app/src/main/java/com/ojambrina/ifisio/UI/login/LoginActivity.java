@@ -15,6 +15,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -116,7 +117,50 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                utils.openDialog(context, R.layout.dialog_forgot_password);
+                dialog = utils.openDialog(context, R.layout.dialog_forgot_password);
+                ImageView cancel = dialog.findViewById(R.id.close);
+                TextView send = dialog.findViewById(R.id.send);
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                send.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        //TODO arreglar bug se cierra la aplicacion cuando introduces un email incorrecto, le das a enviar y una vez ha salido el mensaje de error le das a volver a enviar
+
+                        final EditText editEmail = dialog.findViewById(R.id.edit_email);
+                        email = editEmail.getText().toString().trim();
+
+                        if (email.length() > 0) {
+                            dialog = utils.showProgressDialog(context, "Enviando email de recuperación");
+                            dialog.show();
+                            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("RECOVER PASSWORD", "Email sent.");
+                                                Toast.makeText(context, "Email de recuperación enviado", Toast.LENGTH_SHORT).show();
+                                                dialog.dismiss();
+                                            } else {
+                                                editEmail.setError("Email incorrecto");
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            editEmail.setError("El campo email no puede estar vacío");
+                        }
+
+                    }
+                });
+
+                dialog.show();
             }
         });
 
