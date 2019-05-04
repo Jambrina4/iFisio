@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.adapters.ClinicAdapter;
 import com.ojambrina.ifisio.entities.Clinic;
+import com.ojambrina.ifisio.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class ConnectClinicActivity extends AppCompatActivity {
     ClinicAdapter clinicAdapter;
     DatabaseReference databaseReference;
     Context context;
+    AppCompatActivity contextForToolbar;
+    Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class ConnectClinicActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         context = this;
+        contextForToolbar = this;
+        utils = new Utils();
 
         clinicList = new ArrayList<>();
 
@@ -61,9 +66,7 @@ public class ConnectClinicActivity extends AppCompatActivity {
     }
 
     private void setToolbar() {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(null);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        utils.configToolbar(contextForToolbar, toolbar);
     }
 
     private void setClinicList() {

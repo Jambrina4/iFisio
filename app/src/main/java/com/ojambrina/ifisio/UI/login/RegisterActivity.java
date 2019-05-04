@@ -117,10 +117,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         dialog.dismiss();
+                                        appPreferences.setEmail(email);
+
                                         Log.d("REGISTRO", "createUserWithEmail:onComplete:" + task.isSuccessful());
                                         firebaseFirestore.collection("profesionales").document(username).set(proffesionals);
-                                        appPreferences.setEmail(email);
                                         FirebaseAuth.getInstance().signOut();
+
                                         Intent intent = new Intent(context, LoginActivity.class);
                                         startActivity(intent);
                                         finish();

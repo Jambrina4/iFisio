@@ -17,13 +17,21 @@
         <item name="android:backgroundTint">@android:color/white</item>
     </style>
 
+    <style name="LoginTextInputLayout">
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+    <style name="RegisterTextInputLayout">
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
     <style name="RegisterEditText" parent="android:Widget.EditText">
+        <item name="android:layout_marginTop">32dp</item>
         <item name="android:layout_marginStart">32dp</item>
         <item name="android:layout_marginEnd">32dp</item>
-        <item name="android:layout_marginTop">16dp</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@android:color/white</item>
-        <item name="android:backgroundTint">@android:color/white</item>
+        <item name="android:backgroundTint">@android:color/transparent</item>
 
     </style>
 
@@ -34,7 +42,9 @@
 
     <style name="RegisterTextView" parent="android:Widget.TextView">
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:layout_margin">32dp</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="android:layout_marginStart">32dp</item>
+        <item name="android:layout_marginEnd">32dp</item>
         <item name="android:textAlignment">center</item>
     </style>
 </resources>

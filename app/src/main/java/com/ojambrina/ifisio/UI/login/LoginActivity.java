@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -28,6 +32,8 @@ import com.ojambrina.ifisio.utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static java.lang.String.format;
+
 public class LoginActivity extends AppCompatActivity {
 
     //Butterknife
@@ -35,6 +41,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText editEmail;
     @BindView(R.id.login_password)
     EditText editPassword;
+    @BindView(R.id.forgot_password)
+    TextView forgotPassword;
     @BindView(R.id.checkbox_remember)
     CheckBox checkBoxRemember;
     @BindView(R.id.layout_login)
@@ -73,8 +81,6 @@ public class LoginActivity extends AppCompatActivity {
         layoutLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 if (validateEmail(editEmail) && validatePassword(editPassword)) {
                     if (checkBoxRemember.isChecked()) {
                         firebaseUser = firebaseAuth.getCurrentUser();
@@ -88,6 +94,9 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+
+                                        appPreferences.setEmail(email);
+
                                         dialog.dismiss();
                                         Log.d("FIREBASE LOGIN", "signInWithEmail:success");
                                         Intent intent = new Intent(context, HomeActivity.class);
@@ -101,6 +110,13 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             });
                 }
+            }
+        });
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                utils.openDialog(context, R.layout.dialog_forgot_password);
             }
         });
 
