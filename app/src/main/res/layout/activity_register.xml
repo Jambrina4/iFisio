@@ -20,8 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="64dp"
             android:hint="@string/name"
-            android:maxLines="1"
-            android:textColor="@android:color/white" />
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/edit_surname"
@@ -29,16 +28,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/surname"
-            android:maxLines="1"
+            android:singleLine="true"
             android:textColor="@android:color/white" />
 
         <EditText
-            android:id="@+id/edit_DNI"
+            android:id="@+id/edit_identity_number"
             style="@style/RegisterEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/dni"
-            android:maxLines="1" />
+            android:hint="@string/identityNumber"
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/edit_email"
@@ -46,8 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:maxLines="1" />
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/edit_phone"
@@ -56,7 +54,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/phone"
             android:inputType="number"
-            android:maxLines="1" />
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/edit_password"
@@ -64,8 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:inputType="textPassword"
-            android:maxLines="1" />
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/edit_password_repeat"
@@ -73,8 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password_repeat"
-            android:inputType="textPassword"
-            android:maxLines="1" />
+            android:inputType="textPassword" />
 
         <LinearLayout
             android:id="@+id/layout_register"

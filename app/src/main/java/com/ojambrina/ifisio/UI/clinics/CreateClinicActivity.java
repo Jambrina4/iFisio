@@ -24,6 +24,10 @@ public class CreateClinicActivity extends AppCompatActivity {
     EditText editClinicName;
     @BindView(R.id.edit_clinic_direction)
     EditText editClinicDirection;
+    @BindView(R.id.edit_clinic_cif)
+    EditText editClinicCif;
+    @BindView(R.id.edit_clinic_description)
+    EditText editClinicDescription;
     @BindView(R.id.button_clinic_register)
     Button buttonClinicRegister;
     @BindView(R.id.toolbar)
@@ -50,7 +54,9 @@ public class CreateClinicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String name = editClinicName.getText().toString().trim();
                 String direction = editClinicDirection.getText().toString().trim();
-                addClinic(name, direction);
+                String cif = editClinicCif.getText().toString().trim();
+                String description = editClinicDescription.getText().toString().trim();
+                addClinic(name, direction, cif, description);
 
                 Intent intent = new Intent(context, ClinicActivity.class);
                 startActivity(intent);
@@ -71,11 +77,13 @@ public class CreateClinicActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void addClinic(String name, String direction) {
+    private void addClinic(String name, String direction, String cif, String description) {
         Clinic clinic = new Clinic();
 
         clinic.setName(name);
         clinic.setDirection(direction);
+        clinic.setName(cif);
+        clinic.setDirection(description);
 
         databaseReference.child("clinicas").child("listado_clinicas").setValue(clinic);
     }

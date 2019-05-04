@@ -34,7 +34,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/login_email"
+                android:id="@+id/edit_email"
                 style="@style/LoginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,24 +51,14 @@
                 android:inputType="textPassword"
                 android:textColor="@android:color/white" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <CheckBox
+                android:id="@+id/checkbox_remember"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_margin="16dp"
+                android:text="@string/remember_me"
+                android:textColor="@android:color/white" />
 
-                <CheckBox
-                    android:id="@+id/remember_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp" />
-
-                <TextView
-                    style="@style/LoginTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/remember_me" />
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_login"

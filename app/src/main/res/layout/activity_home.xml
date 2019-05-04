@@ -54,6 +54,23 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/text_connect_clinic" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:padding="16dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Desconectarse" />
+
+        <TextView
+            android:id="@+id/text_clear_preferences"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Limpiar Preferencias" />
     </LinearLayout>
 
 </LinearLayout>

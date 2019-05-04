@@ -7,7 +7,7 @@
     <string name="register_forgot_pass">Registrarse | Olvidé mi contraseña</string>
     <string name="name">Nombre</string>
     <string name="surname">Apellidos</string>
-    <string name="dni">DNI</string>
+    <string name="identityNumber">DNI</string>
     <string name="have_account">Ya tengo cuenta. Entrar</string>
     <string name="register">Registro</string>
     <string name="password_repeat">Repetir contraseña</string>
@@ -17,4 +17,6 @@
     <string name="edit_clinic_name">Nombre de la clinica</string>
     <string name="edit_direction">Dirección</string>
     <string name="clinic_register">Registrar clínica</string>
+    <string name="edit_description">Introduce una descripción (opcional)</string>
+    <string name="edit_cif">CIF (Opcional)</string>
 </resources>
