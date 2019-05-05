@@ -16,11 +16,13 @@
     <string name="text_add_clinic">Agregar una clínica</string>
     <string name="text_connect_clinic">Conectarse a una clínica</string>
     <string name="edit_clinic_name">Nombre de la clinica</string>
-    <string name="edit_direction">Dirección</string>
+    <string name="edit_direction">Dirección (opcional)</string>
     <string name="clinic_register">Registrar clínica</string>
     <string name="edit_description">Introduce una descripción (opcional)</string>
     <string name="edit_cif">CIF (Opcional)</string>
     <string name="enter_email">Introduce tu correo electrónico y te enviaremos una contraseña nueva</string>
     <string name="password_forgotten">¿Has olvidado tu contraseña?</string>
     <string name="text_send">Enviar</string>
+    <string name="clinic_password">Contraseña de la clínica</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

@@ -85,31 +85,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (validateEmail(editEmail) && validatePassword(editPassword)) {
                     if (checkBoxRemember.isChecked()) {
                         firebaseUser = firebaseAuth.getCurrentUser();
+                        appPreferences.setCheckboxLogin(true);
+                        login();
+                    } else {
+                        appPreferences.setCheckboxLogin(false);
+                        login();
                     }
-
-                    dialog = utils.showProgressDialog(context, "Iniciando sesión");
-                    dialog.show();
-
-                    firebaseAuth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-
-                                        appPreferences.setEmail(email);
-
-                                        dialog.dismiss();
-                                        Log.d("FIREBASE LOGIN", "signInWithEmail:success");
-                                        Intent intent = new Intent(context, HomeActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        dialog.dismiss();
-                                        Log.w("FIREBASE LOGIN", "signInWithEmail:failure", task.getException());
-                                        Toast.makeText(context, "Los datos de inicio de sesión son incorrectos.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
                 }
             }
         });
@@ -172,6 +153,32 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void login() {
+        dialog = utils.showProgressDialog(context, "Iniciando sesión");
+        dialog.show();
+
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            appPreferences.setEmail(email);
+
+                            dialog.dismiss();
+                            Log.d("FIREBASE LOGIN", "signInWithEmail:success");
+                            Intent intent = new Intent(context, HomeActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            dialog.dismiss();
+                            Log.w("FIREBASE LOGIN", "signInWithEmail:failure", task.getException());
+                            Toast.makeText(context, "Datos de inicio de sesión incorrectos.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     //Validations

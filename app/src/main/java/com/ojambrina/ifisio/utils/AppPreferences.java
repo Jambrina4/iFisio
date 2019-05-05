@@ -3,12 +3,11 @@ package com.ojambrina.ifisio.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.firebase.auth.FirebaseUser;
-
 public class AppPreferences {
     private static final String PREF_FILE = "MyPreferences";
 
     private static final String EMAIL = "email";
+    private static final String CHECKBOX_LOGIN = "loginCheckboxIsChecked";
 
     private Context context;
 
@@ -32,6 +31,10 @@ public class AppPreferences {
         return getSharedPreferences().getString(EMAIL, null);
     }
 
+    public boolean getCheckboxLogin() {
+        return getSharedPreferences().getBoolean(CHECKBOX_LOGIN, false);
+    }
+
     /**
      * SETTER'S
      **/
@@ -39,6 +42,11 @@ public class AppPreferences {
     public void setEmail(String email) {
         this.getSharedPreferences().edit().putString(EMAIL, email).apply();
     }
+
+    public void setCheckboxLogin(boolean checkboxLogin) {
+        this.getSharedPreferences().edit().putBoolean(CHECKBOX_LOGIN, checkboxLogin).apply();
+    }
+
     /**
      * CLEAR
      **/

@@ -3,7 +3,6 @@ package com.ojambrina.ifisio.UI.login;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -167,6 +166,13 @@ public class RegisterActivity extends AppCompatActivity {
         proffesionals.put(username, proffesional);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(context, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
     //VALIDATIONS
     private boolean validateName(EditText editName) {
         name = editName.getText().toString().trim();
