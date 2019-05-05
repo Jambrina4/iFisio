@@ -92,9 +92,19 @@ public class ConnectClinicActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    //TODO Terminar método para recoger los resultados de la colección y mostrarlos en le recyclerview
-                } else {
-                    Log.d("GET CLINICS", "Error getting documents: ", task.getException());
+                    //TODO Convertir el resultado en el objeto necesario para imprimirlo en pantalla
+                    firebaseFirestore.collection("clinicas").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Log.d("GET CLINICS", document.getId() + " => " + document.getData());
+                                }
+                            } else {
+                                Log.d("GET CLINICS", "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
                 }
             }
         });
