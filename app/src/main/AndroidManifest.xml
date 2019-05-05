@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".UI.clinics.ClinicActivityDetail"></activity>
         <activity android:name=".UI.clinics.ClinicActivity" />
         <activity android:name=".UI.clinics.ConnectClinicActivity" />
         <activity android:name=".UI.clinics.CreateClinicActivity" />

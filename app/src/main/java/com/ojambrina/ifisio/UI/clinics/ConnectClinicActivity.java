@@ -2,22 +2,36 @@ package com.ojambrina.ifisio.UI.clinics;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.adapters.ClinicAdapter;
 import com.ojambrina.ifisio.entities.Clinic;
 import com.ojambrina.ifisio.utils.Utils;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +45,12 @@ public class ConnectClinicActivity extends AppCompatActivity {
     @BindView(R.id.recycler_clinic)
     RecyclerView recyclerClinic;
 
+    Clinic clinic;
     List<Clinic> clinicList;
     ClinicAdapter clinicAdapter;
     DatabaseReference databaseReference;
+    FirebaseFirestore firebaseFirestore;
+    FirebaseDatabase firebaseDatabase;
     Context context;
     AppCompatActivity contextForToolbar;
     Utils utils;
@@ -52,6 +69,7 @@ public class ConnectClinicActivity extends AppCompatActivity {
 
         setToolbar();
         listeners();
+        setFirebase();
         setClinicList();
         setAdapter();
     }
@@ -70,22 +88,22 @@ public class ConnectClinicActivity extends AppCompatActivity {
     }
 
     private void setClinicList() {
-        databaseReference = FirebaseDatabase.getInstance().getReference("clinicas");
-
-        databaseReference.child("listado_clinicas").addValueEventListener(new ValueEventListener() {
+        firebaseFirestore.collection("clinicas").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                clinicList.clear();
-                for (DataSnapshot data : dataSnapshot.getChildren()){
-                    clinicList.add((Clinic) data.getValue());
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    //TODO Terminar método para recoger los resultados de la colección y mostrarlos en le recyclerview
+                } else {
+                    Log.d("GET CLINICS", "Error getting documents: ", task.getException());
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w("WARNING", "getUser:onCancelled", databaseError.toException());
-            }
         });
+    }
+
+    private void setFirebase() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("clinicas");
+        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
     private void setAdapter() {
