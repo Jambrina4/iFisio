@@ -19,6 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -96,13 +97,8 @@ public class ConnectClinicActivity extends AppCompatActivity {
                     firebaseFirestore.collection("clinicas").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (DocumentSnapshot document : task.getResult()) {
-                                    Log.d("GET CLINICS", document.getId() + " => " + document.getData());
-                                }
-                            } else {
-                                Log.d("GET CLINICS", "Error getting documents: ", task.getException());
-                            }
+                            clinicList.addAll(task.getResult().toObjects(Clinic.class));
+                            Log.d("Clinicas", String.valueOf(task.getResult().toObjects(Clinic.class)));
                         }
                     });
                 }
