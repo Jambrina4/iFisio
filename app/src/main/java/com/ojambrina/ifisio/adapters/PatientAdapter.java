@@ -52,4 +52,9 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.ViewHold
             ButterKnife.bind(context, itemView);
         }
     }
+
+    public void setData(List<Patient> newPatientList) {
+        patientList = newPatientList;
+        notifyDataSetChanged();
+    }
 }

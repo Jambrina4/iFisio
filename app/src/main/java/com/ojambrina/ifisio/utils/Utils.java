@@ -22,7 +22,7 @@ import com.bumptech.glide.Glide;
 
 public class Utils {
 
-    public ProgressDialog showProgressDialog(Context context, String message) {
+    public static ProgressDialog showProgressDialog(Context context, String message) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(message);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -31,7 +31,7 @@ public class Utils {
         return progressDialog;
     }
 
-    public Dialog openDialog(Context context, int layout) {
+    public static Dialog openDialog(Context context, int layout) {
         Dialog dialog = new Dialog(context);
 
         dialog.setContentView(layout);
@@ -40,7 +40,7 @@ public class Utils {
         return dialog;
     }
 
-    public Spanned fromHtml(String text) {
+    public static Spanned fromHtml(String text) {
         Spanned textSpanned;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             textSpanned = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
@@ -60,7 +60,7 @@ public class Utils {
         }
     }
 
-    public void configToolbar(AppCompatActivity context, Toolbar toolbar) {
+    public static void configToolbar(AppCompatActivity context, Toolbar toolbar) {
         context.setSupportActionBar(toolbar);
         context.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context.getSupportActionBar().setDisplayShowHomeEnabled(true);

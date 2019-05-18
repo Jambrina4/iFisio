@@ -16,11 +16,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Clinic;
+import com.ojambrina.ifisio.entities.Patient;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.ojambrina.ifisio.utils.Constants.CLINIC;
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 
 public class CreateClinicActivity extends AppCompatActivity {
 
@@ -43,12 +47,12 @@ public class CreateClinicActivity extends AppCompatActivity {
     //Declarations
     Context context;
     Clinic clinic;
-    HashMap<String, Clinic> clinicList;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     FirebaseFirestore firebaseFirestore;
     String name, password, direction, clinicIdentityNumber, description;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +73,11 @@ public class CreateClinicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addClinic();
-                firebaseFirestore.collection("clinicas").document(name).set(clinicList);
+                firebaseFirestore.collection("clinicas").document(name).set(clinic);
                 Toast.makeText(context, "Clínica agregada correctamente", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ClinicActivity.class);
-                intent.putExtra("clinic_name", clinic.getName());
+                intent.putExtra(CLINIC_NAME, clinic.getName());
+                intent.putExtra(CLINIC, clinic);
                 startActivity(intent);
                 finish();
             }
@@ -106,9 +111,7 @@ public class CreateClinicActivity extends AppCompatActivity {
         clinic.setDirection(direction);
         clinic.setIdentityNumber(clinicIdentityNumber);
         clinic.setDescription(description);
-
-        clinicList = new HashMap<>();
-        clinicList.put(name, clinic);
+        clinic.setPatientList(new ArrayList<Patient>());
     }
 
     private void setFirebase() {

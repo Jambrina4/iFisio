@@ -25,4 +25,6 @@
     <string name="text_send">Enviar</string>
     <string name="clinic_password">Contraseña de la clínica</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="clinic_name">Nombre de la clinica</string>
+    <string name="dont_find_clinic">No encuentras tu clínica?\nCrea la tuya aquí</string>
 </resources>

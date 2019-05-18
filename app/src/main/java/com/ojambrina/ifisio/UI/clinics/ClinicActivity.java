@@ -11,16 +11,28 @@ import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.ojambrina.ifisio.R;
+import com.ojambrina.ifisio.adapters.PatientAdapter;
+import com.ojambrina.ifisio.entities.Clinic;
 import com.ojambrina.ifisio.entities.Patient;
 import com.ojambrina.ifisio.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.ojambrina.ifisio.utils.Constants.CLINIC;
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 
 public class ClinicActivity extends AppCompatActivity {
 
@@ -33,13 +45,15 @@ public class ClinicActivity extends AppCompatActivity {
     AppCompatActivity contextForToolbar;
     Utils utils;
     Patient patient;
-    Map<String, Patient> patients;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     FirebaseFirestore firebaseFirestore;
     Intent intent;
     String clinic_name, name;
+    PatientAdapter patientAdapter;
+    Clinic clinic;
+    List<Patient> patientList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +65,21 @@ public class ClinicActivity extends AppCompatActivity {
         contextForToolbar = this;
         utils = new Utils();
         intent = getIntent();
-        clinic_name = intent.getStringExtra("clinic_name");
+        clinic_name = intent.getStringExtra(CLINIC_NAME);
+        clinic = (Clinic) intent.getSerializableExtra(CLINIC);
+        patientList = new ArrayList<>();
+
+        //recibir clinica entera
 
         setToolbar();
         setFirebase();
+        setAdapter();
         listeners();
+    }
+
+    //DiffUtils librería
+    private void setAdapter() {
+
     }
 
     private void setToolbar() {
@@ -74,8 +98,20 @@ public class ClinicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addPatient();
+                firebaseFirestore.collection("clinicas").document(clinic_name).set(clinic);
+            }
+        });
 
-                firebaseFirestore.collection("clinicas").document(clinic_name).collection("Lista de pacientes").document(name).set(patients);
+        firebaseFirestore.collection("clinicas").document("Clinica Test 3").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (documentSnapshot != null) {
+                    Clinic clinic = documentSnapshot.toObject(Clinic.class);
+
+                    if (clinic != null && clinic.getPatientList() != null) {
+                        patientAdapter.setData(clinic.getPatientList());
+                    }
+                }
             }
         });
     }
@@ -93,8 +129,9 @@ public class ClinicActivity extends AppCompatActivity {
         patient.setTreatment("Descargas");
         patient.setVisit("15-05-2019");
 
-        patients = new HashMap<>();
-        patients.put(name, patient);
+        patientList.add(patient);
+
+        clinic.setPatientList(patientList);
     }
 
     private void setFirebase() {

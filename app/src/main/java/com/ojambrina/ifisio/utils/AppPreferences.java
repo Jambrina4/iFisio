@@ -3,6 +3,8 @@ package com.ojambrina.ifisio.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.List;
+
 public class AppPreferences {
     private static final String PREF_FILE = "MyPreferences";
 

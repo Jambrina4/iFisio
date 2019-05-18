@@ -1,6 +1,11 @@
 package com.ojambrina.ifisio.entities;
 
-public class Clinic {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Clinic implements Serializable {
 
     private String name;
     private String password;
@@ -8,6 +13,8 @@ public class Clinic {
     private String identityNumber;
     private String description;
     private String image;
+    private List<Patient> patientList = new ArrayList<>();
+    private HashMap<String, Clinic> clinicHashMap;
 
     public String getName() {
         return name;
@@ -55,5 +62,30 @@ public class Clinic {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public List<Patient> getPatientList() {
+        return patientList;
+    }
+
+    public void setPatientList(List<Patient> patientList) {
+        this.patientList = patientList;
+    }
+
+    public HashMap<String, Clinic> getClinicHashMap() {
+        return clinicHashMap;
+    }
+
+    public void setClinicHashMap(HashMap<String, Clinic> clinicHashMap) {
+        this.clinicHashMap = clinicHashMap;
+    }
+
+    public void getClinic() {
+        String clinicName = clinicHashMap.get(name).toString();
+        String clinicPassword = clinicHashMap.get(password).toString();
+        String clinicDirection = clinicHashMap.get(direction).toString();
+        String clinicIdentityNumber = clinicHashMap.get(identityNumber).toString();
+        String clinicCescription = clinicHashMap.get(description).toString();
+        String clinicImage = clinicHashMap.get(image).toString();
     }
 }
