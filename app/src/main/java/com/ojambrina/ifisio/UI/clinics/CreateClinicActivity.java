@@ -74,8 +74,6 @@ public class CreateClinicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 addClinic();
 
-                //TODO Revisar la forma de almacenar la información para poder recuperarla correctamente
-
                 firebaseFirestore.collection("clinicas").document(name).set(clinicHashMap);
                 Toast.makeText(context, "Clínica agregada correctamente", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ClinicActivity.class);
