@@ -16,9 +16,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.ojambrina.ifisio.R;
+import com.ojambrina.ifisio.UI.clinics.ConnectClinicActivity;
 
 public class Utils {
 

@@ -1,21 +1,29 @@
 package com.ojambrina.ifisio.UI.clinics;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -31,6 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.ojambrina.ifisio.utils.Constants.CLINICS;
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 
 public class ConnectClinicActivity extends AppCompatActivity {
 
@@ -50,8 +59,9 @@ public class ConnectClinicActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     Context context;
     AppCompatActivity contextForToolbar;
-    Utils utils;
-    Clinic clinic;
+    Clinic getClinic;
+    String clinicName;
+    String clinicPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +71,6 @@ public class ConnectClinicActivity extends AppCompatActivity {
 
         context = this;
         contextForToolbar = this;
-        utils = new Utils();
 
         clinicList = new ArrayList<>();
 
@@ -90,7 +99,7 @@ public class ConnectClinicActivity extends AppCompatActivity {
     }
 
     private void setToolbar() {
-        utils.configToolbar(contextForToolbar, toolbar);
+        Utils.configToolbar(contextForToolbar, toolbar);
     }
 
     private void setClinicList() {
@@ -123,7 +132,65 @@ public class ConnectClinicActivity extends AppCompatActivity {
     }
 
     private void setAdapter() {
-        clinicAdapter = new ClinicAdapter(context, clinicList);
+        clinicAdapter = new ClinicAdapter(context, clinicList, new ClinicAdapter.OnClickListener() {
+            @Override
+            public void onClick(int position, Clinic clinic) {
+
+                clinicName = clinicList.get(position);
+
+                Dialog dialog = new Dialog(context);
+
+                dialog.setContentView(R.layout.dialog_connect_clinic);
+                dialog.setCancelable(false);
+
+                TextView textTitle = dialog.findViewById(R.id.text_title);
+                EditText editPassword = dialog.findViewById(R.id.edit_password);
+                ImageView imageCancel = dialog.findViewById(R.id.image_close);
+                TextView textSend = dialog.findViewById(R.id.text_send);
+
+                textTitle.setText(clinicName);
+                getClinic = clinic;
+
+                imageCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+                textSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        clinicPassword = editPassword.getText().toString().trim();
+
+                        firebaseFirestore.collection(CLINICS).document(clinicName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                getClinic = documentSnapshot.get(clinicName, Clinic.class);
+                                if (getClinic != null) {
+                                    if (clinicPassword.length() > 0) {
+                                        if (clinicPassword.equals(getClinic.getPassword())) {
+                                            Intent intent = new Intent(context, ClinicActivity.class);
+                                            intent.putExtra(CLINIC_NAME, clinicName);
+                                            dialog.dismiss();
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            editPassword.setError("Datos de inicio de sesion incorrectos");
+                                            editPassword.requestFocus();
+                                        }
+                                    } else {
+                                        editPassword.setError("El campo no puede estar vacío");
+                                        editPassword.requestFocus();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                dialog.show();
+            }
+        });
         recyclerClinic.setAdapter(clinicAdapter);
     }
 }

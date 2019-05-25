@@ -23,8 +23,16 @@
     <string name="enter_email">Introduce tu correo electrónico y te enviaremos una contraseña nueva</string>
     <string name="password_forgotten">¿Has olvidado tu contraseña?</string>
     <string name="text_send">Enviar</string>
+    <string name="text_cancel">Cancelar</string>
     <string name="clinic_password">Contraseña de la clínica</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="clinic_name">Nombre de la clinica</string>
     <string name="dont_find_clinic">No encuentras tu clínica?\nCrea la tuya aquí</string>
+    <string name="patient_name">Nombre del paciente</string>
+    <string name="patient_surname">Apellidos</string>
+    <string name="patient_identity_number">DNI</string>
+    <string name="patient_age">Edad</string>
+    <string name="patient_injury">Lesión</string>
+    <string name="patient_treatment">Tratamiento</string>
+    <string name="add_patient">Añadir paciente</string>
 </resources>

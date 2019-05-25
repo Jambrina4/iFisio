@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background_blue"
+    android:orientation="vertical"
+    tools:context=".UI.clinics.patients.PatientDetailActivity">
+
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:padding="16dp"
+            android:background="@drawable/round_corner_low">
+
+            <TextView
+                android:id="@+id/text_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Historial" />
+
+            <ImageView
+                android:id="@+id/image_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_history"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_person_black_24dp" />
+
+            <TextView
+                android:id="@+id/text_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_history"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/image_user"
+                android:text="Pedro Fuenla" />
+
+            <TextView
+                android:id="@+id/text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_name"
+                android:layout_toEndOf="@id/image_user"
+                android:text="Fecha: 22-10-2018" />
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/text_date"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/text_highlight1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Texto destacado 1"
+                android:layout_below="@id/separator"/>
+
+            <TextView
+                android:id="@+id/text_highlight2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Texto destacado 1"
+                android:layout_below="@id/text_highlight1"/>
+
+            <TextView
+                android:id="@+id/text_highlight3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Texto destacado 1"
+                android:layout_below="@id/text_highlight2"/>
+
+            <TextView
+                android:id="@+id/text_highlight4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Texto destacado 1"
+                android:layout_below="@id/text_highlight3"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

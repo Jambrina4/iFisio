@@ -16,9 +16,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Clinic;
-import com.ojambrina.ifisio.entities.Patient;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +51,7 @@ public class CreateClinicActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     FirebaseFirestore firebaseFirestore;
     String name, password, direction, clinicIdentityNumber, description;
+    HashMap<String, Clinic> clinicHashMap;
 
 
     @Override
@@ -73,7 +73,10 @@ public class CreateClinicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addClinic();
-                firebaseFirestore.collection("clinicas").document(name).set(clinic);
+
+                //TODO Revisar la forma de almacenar la información para poder recuperarla correctamente
+
+                firebaseFirestore.collection("clinicas").document(name).set(clinicHashMap);
                 Toast.makeText(context, "Clínica agregada correctamente", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ClinicActivity.class);
                 intent.putExtra(CLINIC_NAME, clinic.getName());
@@ -83,12 +86,7 @@ public class CreateClinicActivity extends AppCompatActivity {
             }
         });
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void setToolbar() {
@@ -111,7 +109,9 @@ public class CreateClinicActivity extends AppCompatActivity {
         clinic.setDirection(direction);
         clinic.setIdentityNumber(clinicIdentityNumber);
         clinic.setDescription(description);
-        clinic.setPatientList(new ArrayList<Patient>());
+
+        clinicHashMap = new HashMap<>();
+        clinicHashMap.put(name, clinic);
     }
 
     private void setFirebase() {

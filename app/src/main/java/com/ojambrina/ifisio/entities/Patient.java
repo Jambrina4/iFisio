@@ -1,6 +1,9 @@
 package com.ojambrina.ifisio.entities;
 
-public class Patient {
+import java.io.Serializable;
+
+public class Patient implements Serializable {
+
     private String name;
     private String surname;
     private String age;
@@ -8,6 +11,9 @@ public class Patient {
     private String injury;
     private String treatment;
     private String visit;
+
+    public Patient() {
+    }
 
     public String getName() {
         return name;
