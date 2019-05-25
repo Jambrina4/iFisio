@@ -35,4 +35,10 @@
     <string name="patient_injury">Lesión</string>
     <string name="patient_treatment">Tratamiento</string>
     <string name="add_patient">Añadir paciente</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="history">Historial</string>
+    <string name="fisiotherapy">Fisioterapia</string>
+    <string name="psychology">Psicología</string>
 </resources>

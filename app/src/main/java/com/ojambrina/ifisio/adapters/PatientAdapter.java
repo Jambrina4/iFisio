@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ojambrina.ifisio.R;
-import com.ojambrina.ifisio.UI.clinics.patients.PatientDetailActivity;
+import com.ojambrina.ifisio.UI.clinics.patients.PatientDetail.PatientDetailActivity;
 import com.ojambrina.ifisio.entities.Patient;
 
 import java.util.List;
@@ -20,15 +20,20 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
+import static com.ojambrina.ifisio.utils.Constants.PATIENT_NAME;
+
 public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.ViewHolder> {
 
     private Patient patient;
     private Context context;
     private List<String> patientList;
+    private String clinic_name;
 
-    public PatientAdapter(Context context, List<String> patientList) {
+    public PatientAdapter(Context context, List<String> patientList, String clinic_name) {
         this.context = context;
         this.patientList = patientList;
+        this.clinic_name = clinic_name;
     }
 
     @NonNull
@@ -47,6 +52,8 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.ViewHold
         //crear metodo loadGlide en utils para cargar imagen del paciente
         holder.layoutPatient.setOnClickListener(v -> {
             Intent intent = new Intent(context, PatientDetailActivity.class);
+            intent.putExtra(PATIENT_NAME, position);
+            intent.putExtra(CLINIC_NAME, clinic_name);
             context.startActivity(intent);
         });
     }
@@ -69,10 +76,5 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.ViewHold
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    public void setData(List<String> newPatientList) {
-        patientList = newPatientList;
-        notifyDataSetChanged();
     }
 }

@@ -71,6 +71,7 @@ public class AddPatient extends AppCompatActivity {
             public void onClick(View v) {
                 addPatient();
                 firebaseFirestore.collection("clinicas").document(clinic_name).collection(PATIENTS).document(patient.getName()).set(patient);
+                finish();
             }
         });
 

@@ -83,12 +83,6 @@ public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder
         TextView textClinic;
         @BindView(R.id.layout_clinic)
         LinearLayout layoutClinic;
-        @BindView(R.id.image_close)
-        ImageView imageClose;
-        @BindView(R.id.edit_password)
-        EditText editPassword;
-        @BindView(R.id.text_send)
-        TextView textSend;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

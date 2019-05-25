@@ -18,7 +18,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ojambrina.ifisio.R;
@@ -87,7 +89,7 @@ public class ClinicActivity extends AppCompatActivity {
 
     //DiffUtils librería
     private void setAdapter() {
-        patientAdapter = new PatientAdapter(context, patientList);
+        patientAdapter = new PatientAdapter(context, patientList, clinic_name);
         GridLayoutManager layout = new GridLayoutManager(context,2 );
         recyclerClinic.setLayoutManager(layout);
         recyclerClinic.setAdapter(patientAdapter);
@@ -115,21 +117,27 @@ public class ClinicActivity extends AppCompatActivity {
     }
 
     private void setPatientList() {
-        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<String> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        list.add(document.getId());
-                    }
-                    patientList.addAll(list);
-                    progressBar.setVisibility(View.GONE);
-                    recyclerClinic.setVisibility(View.VISIBLE);
-                    patientAdapter.notifyDataSetChanged();
-                } else {
-                    Log.d("ERROR", "Error getting documents: ", task.getException());
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("ERROR", "Listen failed.", e);
+                    return;
                 }
+
+                List<String> list = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : value) {
+                    if (doc.get("name") != null) {
+                        list.add(doc.getString("name"));
+                    }
+                }
+                patientList.clear();
+                patientList.addAll(list);
+                progressBar.setVisibility(View.GONE);
+                recyclerClinic.setVisibility(View.VISIBLE);
+                patientAdapter.notifyDataSetChanged();
+                Log.d("INFO", "Current cites in CA: " + list);
             }
         });
     }
@@ -137,17 +145,12 @@ public class ClinicActivity extends AppCompatActivity {
     private void addPatient() {
         Intent intent = new Intent(context, AddPatient.class);
         intent.putExtra(CLINIC_NAME, clinic_name);
-        startActivityForResult(intent, ADD_PATIENT_REQUEST_CODE);
+        startActivity(intent);
     }
 
     private void setFirebase() {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("clinicas");
         firebaseFirestore = FirebaseFirestore.getInstance();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
