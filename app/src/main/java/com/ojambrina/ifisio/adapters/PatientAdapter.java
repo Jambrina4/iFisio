@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ojambrina.ifisio.R;
-import com.ojambrina.ifisio.UI.clinics.patients.PatientDetail.PatientDetailActivity;
+import com.ojambrina.ifisio.UI.clinics.patients.patientDetail.PatientDetailActivity;
 import com.ojambrina.ifisio.entities.Patient;
 
 import java.util.List;

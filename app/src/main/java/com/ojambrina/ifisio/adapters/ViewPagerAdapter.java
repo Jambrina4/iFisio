@@ -1,22 +1,29 @@
 package com.ojambrina.ifisio.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.ojambrina.ifisio.R;
-import com.ojambrina.ifisio.UI.clinics.patients.PatientDetail.FisioFragment;
-import com.ojambrina.ifisio.UI.clinics.patients.PatientDetail.HistoryFragment;
-import com.ojambrina.ifisio.UI.clinics.patients.PatientDetail.PsychologyFragment;
+import com.ojambrina.ifisio.UI.clinics.patients.patientDetail.FisioFragment;
+import com.ojambrina.ifisio.UI.clinics.patients.patientDetail.HistoryFragment;
+import com.ojambrina.ifisio.UI.clinics.patients.patientDetail.PsychologyFragment;
+import com.ojambrina.ifisio.entities.Patient;
+
+import static com.ojambrina.ifisio.utils.Constants.PATIENT;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     private Context context;
+    private Patient patient;
+    private Bundle bundle = new Bundle();
 
-    public ViewPagerAdapter(FragmentManager fragmentManager, Context context) {
+    public ViewPagerAdapter(FragmentManager fragmentManager, Context context, Patient patient) {
         super(fragmentManager);
         this.context = context;
+        this.patient = patient;
     }
 
     // Returns total number of pages
@@ -28,13 +35,20 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     // Returns the fragment to display for that page
     @Override
     public Fragment getItem(int position) {
+        bundle.putSerializable(PATIENT, patient);
         switch (position) {
             case 0:
-                return new HistoryFragment();
+                HistoryFragment historyFragment = new HistoryFragment();
+                historyFragment.setArguments(bundle);
+                return historyFragment;
             case 1:
-                return new FisioFragment();
+                FisioFragment fisioFragment = new FisioFragment();
+                fisioFragment.setArguments(bundle);
+                return fisioFragment;
             case 2:
-                return new PsychologyFragment();
+                PsychologyFragment psychologyFragment = new PsychologyFragment();
+                psychologyFragment.setArguments(bundle);
+                return psychologyFragment;
             default:
                 return null;
         }

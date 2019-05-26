@@ -38,4 +38,7 @@
     <string name="history">Historial</string>
     <string name="fisiotherapy">Fisioterapia</string>
     <string name="psychology">Psicología</string>
+    <string name="visit_reason">MOTIVO DE VISITA</string>
+    <string name="exploration">EXPLORACIÓN</string>
+    <string name="treatment">TRATAMIENTO</string>
 </resources>

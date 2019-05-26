@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".UI.clinics.patients.PatientDetail.PatientDetailActivity"></activity>
+        <activity android:name=".UI.clinics.patients.patientDetail.PatientDetailActivity" />
         <activity android:name=".UI.clinics.patients.AddPatient" />
         <activity android:name=".UI.clinics.ClinicActivity" />
         <activity android:name=".UI.clinics.ConnectClinicActivity" />

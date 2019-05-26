@@ -1,4 +1,4 @@
-package com.ojambrina.ifisio.UI.clinics.patients.PatientDetail;
+package com.ojambrina.ifisio.UI.clinics.patients.patientDetail;
 
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +44,7 @@ public class PatientDetailActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseFirestore firebaseFirestore;
     private String clinic_name;
+    private Patient patient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +61,8 @@ public class PatientDetailActivity extends AppCompatActivity {
 
         setToolbar();
         setFirebase();
-        setAdapter();
         getPatient();
+        setAdapter();
         listeners();
     }
 
@@ -76,7 +77,7 @@ public class PatientDetailActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
     }
     private void setAdapter() {
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context, patient);
         tabLayout.setupWithViewPager(pager);
         pager.setAdapter(viewPagerAdapter);
     }
@@ -88,7 +89,7 @@ public class PatientDetailActivity extends AppCompatActivity {
 
                 //TODO pasar la información a los fragments correspondientes y adaptar los pager
 
-                Patient patient = documentSnapshot.toObject(Patient.class);
+                patient = documentSnapshot.toObject(Patient.class);
                 if (patient != null) {
                     String test = patient.getName();
                     Log.d("TEST", test);
