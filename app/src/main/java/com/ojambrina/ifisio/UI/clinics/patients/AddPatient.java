@@ -16,9 +16,12 @@ import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Patient;
 import com.ojambrina.ifisio.utils.Utils;
 
+import java.util.HashMap;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.ojambrina.ifisio.utils.Constants.CLINICS;
 import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
 
@@ -49,6 +52,8 @@ public class AddPatient extends AppCompatActivity {
     private Patient patient;
     private Context context;
     private AppCompatActivity contextForToolbar;
+    private HashMap<String, Patient> patientHashMap;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +75,8 @@ public class AddPatient extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addPatient();
-                firebaseFirestore.collection("clinicas").document(clinic_name).collection(PATIENTS).document(patient.getName()).set(patient);
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patient);
+                //firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patientHashMap);
                 finish();
             }
         });
@@ -97,13 +103,19 @@ public class AddPatient extends AppCompatActivity {
     public void addPatient() {
         patient = new Patient();
 
-        patient.setName(editPatientName.getText().toString().trim());
+        name = editPatientName.getText().toString().trim();
+
+        patient.setName(name);
         patient.setSurname(editPatientSurname.getText().toString().trim());
         patient.setAge(editPatientAge.getText().toString().trim());
         patient.setIdentityNumber(editPatientIdentityNumber.getText().toString().trim());
         patient.setInjury(editPatientInjury.getText().toString().trim());
         patient.setTreatment(editPatientTreatment.getText().toString().trim());
         patient.setVisit("15-05-2019");
+
+
+        patientHashMap = new HashMap<>();
+        patientHashMap.put(name, patient);
     }
 
     private void setToolbar() {

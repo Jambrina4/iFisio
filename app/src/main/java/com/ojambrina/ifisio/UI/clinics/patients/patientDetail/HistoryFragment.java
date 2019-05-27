@@ -12,9 +12,6 @@ import com.ojambrina.ifisio.entities.Patient;
 
 import static com.ojambrina.ifisio.utils.Constants.PATIENT;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class HistoryFragment extends Fragment {
 
     private Patient patient;

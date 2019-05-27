@@ -76,8 +76,9 @@ public class PatientDetailActivity extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference("clinicas");
         firebaseFirestore = FirebaseFirestore.getInstance();
     }
+
     private void setAdapter() {
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context, patient);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context, patient, clinic_name, patientName);
         tabLayout.setupWithViewPager(pager);
         pager.setAdapter(viewPagerAdapter);
     }

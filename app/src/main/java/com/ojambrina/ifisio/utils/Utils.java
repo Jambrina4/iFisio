@@ -24,6 +24,9 @@ import com.bumptech.glide.Glide;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.UI.clinics.ConnectClinicActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 public class Utils {
 
     public static ProgressDialog showProgressDialog(Context context, String message) {
@@ -72,6 +75,20 @@ public class Utils {
         toolbar.getNavigationIcon().setColorFilter(context.getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         /*final Drawable customArrow = context.getResources().getDrawable(R.drawable.back);
         context.getSupportActionBar().setHomeAsUpIndicator(customArrow);*/
+    }
 
+    public static String getFormattedDate(long millis)  {
+        DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+        String localTime = date.format(millis);
+
+        return localTime;
+    }
+
+    public static String getCurrentDay()  {
+        long millis = System.currentTimeMillis();
+        DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+        String localTime = date.format(millis);
+
+        return localTime;
     }
 }

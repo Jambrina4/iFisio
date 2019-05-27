@@ -9,5 +9,6 @@ public class Constants {
     public static final String CLINIC = "clinic";
     public static final String PATIENT = "paciente";
     public static final String PATIENTS = "Lista de pacientes";
-    public static final String PATIENT_NAME = "paciente";
+    public static final String PATIENT_NAME = "patient_name";
+    public static final String SESSION_LIST = "Lista de sesiones";
 }

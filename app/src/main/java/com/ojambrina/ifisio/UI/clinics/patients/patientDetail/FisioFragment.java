@@ -5,10 +5,19 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.adapters.SessionAdapter;
 import com.ojambrina.ifisio.entities.Patient;
@@ -16,25 +25,40 @@ import com.ojambrina.ifisio.entities.Session;
 import com.ojambrina.ifisio.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static com.ojambrina.ifisio.utils.Constants.CLINICS;
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 import static com.ojambrina.ifisio.utils.Constants.PATIENT;
+import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
+import static com.ojambrina.ifisio.utils.Constants.PATIENT_NAME;
+import static com.ojambrina.ifisio.utils.Constants.SESSION_LIST;
 
 public class FisioFragment extends Fragment {
 
     @BindView(R.id.recycler_session)
     RecyclerView recyclerSession;
-    @BindView(R.id.fab)
+    @BindView(R.id.add_session)
     FloatingActionButton fab;
 
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+    private FirebaseFirestore firebaseFirestore;
     private Context context;
     private Patient patient;
+    private String clinic_name;
+    private String patientName;
     private List<Session> sessionList = new ArrayList<>();
     private SessionAdapter sessionAdapter;
+    private HashMap<String, Session> sessionHashMap;
+
     Unbinder unbinder;
 
     public FisioFragment() {
@@ -43,17 +67,21 @@ public class FisioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_fisio, container, false);
+        unbinder = ButterKnife.bind(this, view);
         if (getArguments() != null) {
             patient = (Patient) getArguments().get(PATIENT);
+            clinic_name = (String) getArguments().get(CLINIC_NAME);
+            patientName = (String) getArguments().get(PATIENT_NAME);
         }
 
         context = getContext();
 
-        listeners();
+        setFirebase();
+        getSessionList();
         setAdapter();
+        listeners();
 
-        View view = inflater.inflate(R.layout.fragment_fisio, container, false);
-        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -66,11 +94,53 @@ public class FisioFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Session session = new Session();
-                sessionList.add(session);
+                addSession();
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(Utils.getCurrentDay()).set(sessionHashMap);
                 sessionAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void getSessionList() {
+        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("ERROR", "Listen failed.", e);
+                    return;
+                }
+
+                List<Session> list = new ArrayList<>();
+
+                //TODO obtener lista de sesiones para añadirlas
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    if (doc.get("name") != null) {
+                        list.add((Session) doc.get("name"));
+                    }
+                }
+                sessionList.clear();
+                sessionList.addAll(list);
+                sessionAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void addSession() {
+        Session session = new Session();
+        String sessionDate = Utils.getCurrentDay();
+        session.setDate(sessionDate);
+        sessionList.add(session);
+
+        sessionHashMap = new HashMap<>();
+        sessionHashMap.put(sessionDate, session);
+
+    }
+
+    private void setFirebase() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("clinicas");
+        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
     @Override
