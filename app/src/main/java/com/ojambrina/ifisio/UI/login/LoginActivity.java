@@ -54,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     //Declarations
     Context context;
     AppPreferences appPreferences;
-    Utils utils;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     String email, password;
@@ -68,7 +67,6 @@ public class LoginActivity extends AppCompatActivity {
 
         context = this;
         appPreferences = new AppPreferences();
-        utils = new Utils();
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (appPreferences.getEmail() != null) {
@@ -98,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = utils.openDialog(context, R.layout.dialog_forgot_password);
+                dialog = Utils.openDialog(context, R.layout.dialog_forgot_password);
                 ImageView cancel = dialog.findViewById(R.id.close);
                 TextView send = dialog.findViewById(R.id.send);
                 cancel.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                         email = editEmail.getText().toString().trim();
 
                         if (email.length() > 0) {
-                            dialog = utils.showProgressDialog(context, "Enviando email de recuperación");
+                            dialog = Utils.showProgressDialog(context, "Enviando email de recuperación");
                             dialog.show();
                             FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -156,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        dialog = utils.showProgressDialog(context, "Iniciando sesión");
+        dialog = Utils.showProgressDialog(context, "Iniciando sesión");
         dialog.show();
 
         firebaseAuth.signInWithEmailAndPassword(email, password)

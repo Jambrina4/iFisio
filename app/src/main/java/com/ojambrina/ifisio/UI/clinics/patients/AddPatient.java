@@ -37,10 +37,6 @@ public class AddPatient extends AppCompatActivity {
     EditText editPatientIdentityNumber;
     @BindView(R.id.edit_patient_age)
     EditText editPatientAge;
-    @BindView(R.id.edit_patient_injury)
-    EditText editPatientInjury;
-    @BindView(R.id.edit_patient_treatment)
-    EditText editPatientTreatment;
     @BindView(R.id.button_add_patient)
     Button buttonAddPatient;
 
@@ -109,13 +105,9 @@ public class AddPatient extends AppCompatActivity {
         patient.setSurname(editPatientSurname.getText().toString().trim());
         patient.setAge(editPatientAge.getText().toString().trim());
         patient.setIdentityNumber(editPatientIdentityNumber.getText().toString().trim());
-        patient.setInjury(editPatientInjury.getText().toString().trim());
-        patient.setTreatment(editPatientTreatment.getText().toString().trim());
-        patient.setVisit("15-05-2019");
 
-
-        patientHashMap = new HashMap<>();
-        patientHashMap.put(name, patient);
+        //patientHashMap = new HashMap<>();
+        //patientHashMap.put(name, patient);
     }
 
     private void setToolbar() {

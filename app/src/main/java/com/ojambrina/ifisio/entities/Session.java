@@ -1,16 +1,14 @@
 package com.ojambrina.ifisio.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Session implements Serializable {
 
     private String date;
-    private String reasonTitle;
-    private String explorationTitle;
-    private String treatmentTitle;
-    private Visit visit;
-    private Exploration exploration;
-    private Treatment treatment;
+    private List<String> reasonList;
+    private List<String> explorationList;
+    private List<String> treatmentList;
 
     public Session() {
     }
@@ -23,51 +21,27 @@ public class Session implements Serializable {
         this.date = date;
     }
 
-    public String getReasonTitle() {
-        return reasonTitle;
+    public List<String> getReasonList() {
+        return reasonList;
     }
 
-    public void setReasonTitle(String reasonTitle) {
-        this.reasonTitle = reasonTitle;
+    public void setReasonList(List<String> reasonList) {
+        this.reasonList = reasonList;
     }
 
-    public String getExplorationTitle() {
-        return explorationTitle;
+    public List<String> getExplorationList() {
+        return explorationList;
     }
 
-    public void setExplorationTitle(String explorationTitle) {
-        this.explorationTitle = explorationTitle;
+    public void setExplorationList(List<String> explorationList) {
+        this.explorationList = explorationList;
     }
 
-    public String getTreatmentTitle() {
-        return treatmentTitle;
+    public List<String> getTreatmentList() {
+        return treatmentList;
     }
 
-    public void setTreatmentTitle(String treatmentTitle) {
-        this.treatmentTitle = treatmentTitle;
-    }
-
-    public Visit getVisit() {
-        return visit;
-    }
-
-    public void setVisit(Visit visit) {
-        this.visit = visit;
-    }
-
-    public Exploration getExploration() {
-        return exploration;
-    }
-
-    public void setExploration(Exploration exploration) {
-        this.exploration = exploration;
-    }
-
-    public Treatment getTreatment() {
-        return treatment;
-    }
-
-    public void setTreatment(Treatment treatment) {
-        this.treatment = treatment;
+    public void setTreatmentList(List<String> treatmentList) {
+        this.treatmentList = treatmentList;
     }
 }

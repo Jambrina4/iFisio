@@ -10,13 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.adapters.SessionAdapter;
@@ -56,8 +54,13 @@ public class FisioFragment extends Fragment {
     private String clinic_name;
     private String patientName;
     private List<Session> sessionList = new ArrayList<>();
+    private List<String> reasonList = new ArrayList<>();
+    private List<String> explorationList = new ArrayList<>();
+    private List<String> treatmentList = new ArrayList<>();
     private SessionAdapter sessionAdapter;
     private HashMap<String, Session> sessionHashMap;
+    private Session session;
+    private String currentDay;
 
     Unbinder unbinder;
 
@@ -86,7 +89,7 @@ public class FisioFragment extends Fragment {
     }
 
     private void setAdapter() {
-        sessionAdapter = new SessionAdapter(context, sessionList);
+        sessionAdapter = new SessionAdapter(context, session, sessionList, clinic_name, patientName);
         recyclerSession.setAdapter(sessionAdapter);
     }
 
@@ -95,7 +98,7 @@ public class FisioFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 addSession();
-                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(Utils.getCurrentDay()).set(sessionHashMap);
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(Utils.getCurrentDay()).set(session);
                 sessionAdapter.notifyDataSetChanged();
             }
         });
@@ -110,15 +113,8 @@ public class FisioFragment extends Fragment {
                     return;
                 }
 
-                List<Session> list = new ArrayList<>();
+                List<Session> list = queryDocumentSnapshots.toObjects(Session.class);
 
-                //TODO obtener lista de sesiones para añadirlas
-
-                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                    if (doc.get("name") != null) {
-                        list.add((Session) doc.get("name"));
-                    }
-                }
                 sessionList.clear();
                 sessionList.addAll(list);
                 sessionAdapter.notifyDataSetChanged();
@@ -127,14 +123,13 @@ public class FisioFragment extends Fragment {
     }
 
     private void addSession() {
-        Session session = new Session();
+        session = new Session();
         String sessionDate = Utils.getCurrentDay();
         session.setDate(sessionDate);
+        session.setReasonList(reasonList);
+        session.setExplorationList(explorationList);
+        session.setTreatmentList(treatmentList);
         sessionList.add(session);
-
-        sessionHashMap = new HashMap<>();
-        sessionHashMap.put(sessionDate, session);
-
     }
 
     private void setFirebase() {

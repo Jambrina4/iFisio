@@ -21,16 +21,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/text_highlight"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_weight="75"
-        android:text="Detalle"
-        android:visibility="gone" />
-
-    <EditText
-        android:id="@+id/edit_highlight"
+        android:id="@+id/text_detail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
