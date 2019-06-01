@@ -3,14 +3,19 @@ package com.ojambrina.ifisio.UI.clinics.patients;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Patient;
@@ -24,6 +29,7 @@ import butterknife.ButterKnife;
 import static com.ojambrina.ifisio.utils.Constants.CLINICS;
 import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
+import static com.ojambrina.ifisio.utils.Constants.SESSION_LIST;
 
 public class AddPatient extends AppCompatActivity {
 
@@ -70,10 +76,20 @@ public class AddPatient extends AppCompatActivity {
         buttonAddPatient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addPatient();
-                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patient);
-                //firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patientHashMap);
-                finish();
+                name = editPatientName.getText().toString().trim();
+
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.getResult().exists()) {
+                            Toast.makeText(context, "Ya existe un paciente con ese nombre", Toast.LENGTH_SHORT).show();
+                        } else {
+                            addPatient();
+                            firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patient);
+                            finish();
+                        }
+                    }
+                });
             }
         });
 
@@ -99,15 +115,10 @@ public class AddPatient extends AppCompatActivity {
     public void addPatient() {
         patient = new Patient();
 
-        name = editPatientName.getText().toString().trim();
-
         patient.setName(name);
         patient.setSurname(editPatientSurname.getText().toString().trim());
         patient.setAge(editPatientAge.getText().toString().trim());
         patient.setIdentityNumber(editPatientIdentityNumber.getText().toString().trim());
-
-        //patientHashMap = new HashMap<>();
-        //patientHashMap.put(name, patient);
     }
 
     private void setToolbar() {

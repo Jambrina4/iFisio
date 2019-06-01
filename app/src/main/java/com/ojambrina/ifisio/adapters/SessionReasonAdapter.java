@@ -9,11 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
+import com.ojambrina.ifisio.entities.Session;
 
 import java.util.List;
 
@@ -21,17 +27,29 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.ojambrina.ifisio.utils.Constants.CLINICS;
+import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
+import static com.ojambrina.ifisio.utils.Constants.SESSION_LIST;
 
 public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdapter.ViewHolder> {
 
     private Context context;
     private List<String> reasonList;
+    private List<String> highlightList;
     private String reason;
     private FirebaseFirestore firebaseFirestore;
+    private String clinic_name;
+    private String patientName;
+    private String date;
+    private Session session;
 
-    public SessionReasonAdapter(Context context, List<String> reasonList) {
+    public SessionReasonAdapter(Context context, List<String> reasonList, List<String> highlightList, Session session, String clinic_name, String patientName, String date) {
         this.context = context;
         this.reasonList = reasonList;
+        this.highlightList = highlightList;
+        this.session = session;
+        this.clinic_name = clinic_name;
+        this.patientName = patientName;
+        this.date = date;
     }
 
     @NonNull
@@ -43,9 +61,29 @@ public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdap
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
+        setFirebase();
+
         reason = reasonList.get(holder.getAdapterPosition());
 
         holder.textDetail.setText(reason);
+
+        holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                highlightList.add(reasonList.get(holder.getAdapterPosition()));
+                session.setHighlightList(highlightList);
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
+            }
+        });
+
+        holder.layoutRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reasonList.remove(reasonList.get(holder.getAdapterPosition()));
+                session.setReasonList(reasonList);
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
+            }
+        });
     }
 
     @Override

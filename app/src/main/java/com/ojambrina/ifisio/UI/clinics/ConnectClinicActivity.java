@@ -24,7 +24,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ojambrina.ifisio.R;
@@ -34,6 +36,8 @@ import com.ojambrina.ifisio.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +56,7 @@ public class ConnectClinicActivity extends AppCompatActivity {
     @BindView(R.id.text_no_clinic)
     TextView textNoClinic;
 
-    List<String> clinicList;
+    List<Clinic> clinicList;
     ClinicAdapter clinicAdapter;
     DatabaseReference databaseReference;
     FirebaseFirestore firebaseFirestore;
@@ -104,23 +108,22 @@ public class ConnectClinicActivity extends AppCompatActivity {
 
     private void setClinicList() {
 
-        //TODO: guardar en shared preferences la lista de clinicas que he añadido para filtrar y que solo salgan las mías
+        //TODO: Futura Update - Guardar en shared preferences la lista de clinicas que he añadido para filtrar y que solo salgan las mías o un EditText para filtrar en la lista en caso de haber muchas
 
-        firebaseFirestore.collection(CLINICS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firebaseFirestore.collection(CLINICS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<String> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        list.add(document.getId());
-                    }
-                    clinicList.addAll(list);
-                    progressBar.setVisibility(View.GONE);
-                    recyclerClinic.setVisibility(View.VISIBLE);
-                    clinicAdapter.notifyDataSetChanged();
-                } else {
-                    Log.d("ERROR", "Error getting documents: ", task.getException());
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("ERROR", "Listen failed.", e);
+                    return;
                 }
+
+                List<Clinic> list = queryDocumentSnapshots.toObjects(Clinic.class);
+
+                clinicList.addAll(list);
+                progressBar.setVisibility(View.GONE);
+                recyclerClinic.setVisibility(View.VISIBLE);
+                clinicAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -136,7 +139,7 @@ public class ConnectClinicActivity extends AppCompatActivity {
             @Override
             public void onClick(int position, Clinic clinic) {
 
-                clinicName = clinicList.get(position);
+                clinicName = clinicList.get(position).getName();
 
                 Dialog dialog = new Dialog(context);
 
@@ -162,30 +165,23 @@ public class ConnectClinicActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         clinicPassword = editPassword.getText().toString().trim();
-
-                        firebaseFirestore.collection(CLINICS).document(clinicName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                getClinic = documentSnapshot.get(clinicName, Clinic.class);
-                                if (getClinic != null) {
-                                    if (clinicPassword.length() > 0) {
-                                        if (clinicPassword.equals(getClinic.getPassword())) {
-                                            Intent intent = new Intent(context, ClinicActivity.class);
-                                            intent.putExtra(CLINIC_NAME, clinicName);
-                                            dialog.dismiss();
-                                            startActivity(intent);
-                                            finish();
-                                        } else {
-                                            editPassword.setError("Datos de inicio de sesion incorrectos");
-                                            editPassword.requestFocus();
-                                        }
-                                    } else {
-                                        editPassword.setError("El campo no puede estar vacío");
-                                        editPassword.requestFocus();
-                                    }
+                        if (getClinic != null) {
+                            if (clinicPassword.length() > 0) {
+                                if (clinicPassword.equals(getClinic.getPassword())) {
+                                    Intent intent = new Intent(context, ClinicActivity.class);
+                                    intent.putExtra(CLINIC_NAME, clinicName);
+                                    dialog.dismiss();
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    editPassword.setError("Datos de inicio de sesion incorrectos");
+                                    editPassword.requestFocus();
                                 }
+                            } else {
+                                editPassword.setError("El campo no puede estar vacío");
+                                editPassword.requestFocus();
                             }
-                        });
+                        }
                     }
                 });
                 dialog.show();

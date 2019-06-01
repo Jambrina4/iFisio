@@ -58,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     String email, password;
     Dialog dialog;
+    Dialog progressDialog;
+    EditText editRecoverEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,33 +111,29 @@ public class LoginActivity extends AppCompatActivity {
                 send.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        //TODO arreglar bug se cierra la aplicacion cuando introduces un email incorrecto, le das a enviar y una vez ha salido el mensaje de error le das a volver a enviar
-
-                        final EditText editEmail = dialog.findViewById(R.id.edit_email);
-                        email = editEmail.getText().toString().trim();
+                        editRecoverEmail = dialog.findViewById(R.id.edit_recover_email);
+                        email = editRecoverEmail.getText().toString().trim();
 
                         if (email.length() > 0) {
-                            dialog = Utils.showProgressDialog(context, "Enviando email de recuperación");
-                            dialog.show();
-                            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d("RECOVER PASSWORD", "Email sent.");
-                                                Toast.makeText(context, "Email de recuperación enviado", Toast.LENGTH_SHORT).show();
-                                                dialog.dismiss();
-                                            } else {
-                                                editEmail.setError("Email incorrecto");
-                                                dialog.dismiss();
-                                            }
-                                        }
-                                    });
+                            progressDialog = Utils.showProgressDialog(context, "Enviando email de recuperación");
+                            progressDialog.show();
+                            FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d("RECOVER PASSWORD", "Email sent.");
+                                        Toast.makeText(context, "Email de recuperación enviado", Toast.LENGTH_SHORT).show();
+                                        progressDialog.dismiss();
+                                        dialog.dismiss();
+                                    } else {
+                                        editRecoverEmail.setError("Email incorrecto");
+                                        progressDialog.dismiss();
+                                    }
+                                }
+                            });
                         } else {
-                            editEmail.setError("El campo email no puede estar vacío");
+                            editRecoverEmail.setError("El campo email no puede estar vacío");
                         }
-
                     }
                 });
 
@@ -154,29 +152,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        dialog = Utils.showProgressDialog(context, "Iniciando sesión");
-        dialog.show();
+        progressDialog = Utils.showProgressDialog(context, "Iniciando sesión");
+        progressDialog.show();
 
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
 
-                            appPreferences.setEmail(email);
+                    appPreferences.setEmail(email);
 
-                            dialog.dismiss();
-                            Log.d("FIREBASE LOGIN", "signInWithEmail:success");
-                            Intent intent = new Intent(context, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            dialog.dismiss();
-                            Log.w("FIREBASE LOGIN", "signInWithEmail:failure", task.getException());
-                            Toast.makeText(context, "Datos de inicio de sesión incorrectos.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                    progressDialog.dismiss();
+                    Log.d("FIREBASE LOGIN", "signInWithEmail:success");
+                    Intent intent = new Intent(context, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    progressDialog.dismiss();
+                    Log.w("FIREBASE LOGIN", "signInWithEmail:failure", task.getException());
+                    Toast.makeText(context, "Datos de inicio de sesión incorrectos.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     //Validations

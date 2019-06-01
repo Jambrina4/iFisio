@@ -2,6 +2,7 @@ package com.ojambrina.ifisio.UI.clinics.patients.patientDetail;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -9,9 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -22,6 +27,7 @@ import com.ojambrina.ifisio.entities.Patient;
 import com.ojambrina.ifisio.entities.Session;
 import com.ojambrina.ifisio.utils.Utils;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +43,7 @@ import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 import static com.ojambrina.ifisio.utils.Constants.PATIENT;
 import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
 import static com.ojambrina.ifisio.utils.Constants.PATIENT_NAME;
+import static com.ojambrina.ifisio.utils.Constants.PATTERN;
 import static com.ojambrina.ifisio.utils.Constants.SESSION_LIST;
 
 public class FisioFragment extends Fragment {
@@ -54,6 +61,7 @@ public class FisioFragment extends Fragment {
     private String clinic_name;
     private String patientName;
     private List<Session> sessionList = new ArrayList<>();
+    private List<String> highlightList = new ArrayList<>();
     private List<String> reasonList = new ArrayList<>();
     private List<String> explorationList = new ArrayList<>();
     private List<String> treatmentList = new ArrayList<>();
@@ -97,8 +105,15 @@ public class FisioFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addSession();
-                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(Utils.getCurrentDay()).set(session);
+                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(Utils.getCurrentDay()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (!task.getResult().exists()) {
+                            addSession();
+                            firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(Utils.getCurrentDay()).set(session);
+                        }
+                    }
+                });
                 sessionAdapter.notifyDataSetChanged();
             }
         });
@@ -126,9 +141,15 @@ public class FisioFragment extends Fragment {
         session = new Session();
         String sessionDate = Utils.getCurrentDay();
         session.setDate(sessionDate);
+        session.setHighlightList(highlightList);
         session.setReasonList(reasonList);
         session.setExplorationList(explorationList);
         session.setTreatmentList(treatmentList);
+        try {
+            session.setDateMillis(Utils.formatMillis(sessionDate, PATTERN));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         sessionList.add(session);
     }
 

@@ -25,7 +25,12 @@ import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.UI.clinics.ConnectClinicActivity;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+import static com.ojambrina.ifisio.utils.Constants.PATTERN;
 
 public class Utils {
 
@@ -78,7 +83,7 @@ public class Utils {
     }
 
     public static String getFormattedDate(long millis)  {
-        DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+        DateFormat date = new SimpleDateFormat(PATTERN);
         String localTime = date.format(millis);
 
         return localTime;
@@ -86,9 +91,17 @@ public class Utils {
 
     public static String getCurrentDay()  {
         long millis = System.currentTimeMillis();
-        DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+        DateFormat date = new SimpleDateFormat(PATTERN);
         String localTime = date.format(millis);
 
         return localTime;
+    }
+
+    public static Long formatMillis(String time, String dateFormat) throws ParseException {
+        TimeZone timeZone = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        simpleDateFormat.setTimeZone(timeZone);
+        Date date = simpleDateFormat.parse(time);
+        return date.getTime();
     }
 }

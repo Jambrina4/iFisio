@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -76,12 +77,13 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
 
+        //TODO arreglar bug que en las tarjetas se muestran los datos de la sesión errónea
+        //TODO añadir método para ordenar las listas con session.getDateMillis
+
         setFirebase();
         session = sessionList.get(holder.getAdapterPosition());
 
         date = session.getDate();
-
-        sessionHighlightAdapter = new SessionHighlightAdapter(context, highlightList);
 
         setSession(holder);
 
@@ -117,29 +119,30 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     }
 
     private void setSession(ViewHolder holder) {
-        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                session = task.getResult().toObject(Session.class);
-                if (session != null) {
-                    reasonList.clear();
-                    explorationList.clear();
-                    treatmentList.clear();
+        highlightList.clear();
+        reasonList.clear();
+        explorationList.clear();
+        treatmentList.clear();
 
-                    reasonList.addAll(session.getReasonList());
-                    explorationList.addAll(session.getExplorationList());
-                    treatmentList.addAll(session.getTreatmentList());
+        sessionHighlightAdapter = new SessionHighlightAdapter(context, highlightList, session, clinic_name, patientName, date);
+        sessionReasonAdapter = new SessionReasonAdapter(context, reasonList, highlightList, session, clinic_name, patientName, date);
+        sessionExplorationAdapter = new SessionExplorationAdapter(context, explorationList, highlightList, session, clinic_name, patientName, date);
+        sessionTreatmentAdapter = new SessionTreatmentAdapter(context, treatmentList, highlightList, session, clinic_name, patientName, date);
 
-                    sessionReasonAdapter = new SessionReasonAdapter(context, reasonList);
-                    sessionExplorationAdapter = new SessionExplorationAdapter(context, explorationList);
-                    sessionTreatmentAdapter = new SessionTreatmentAdapter(context, treatmentList);
+        highlightList.addAll(session.getHighlightList());
+        reasonList.addAll(session.getReasonList());
+        explorationList.addAll(session.getExplorationList());
+        treatmentList.addAll(session.getTreatmentList());
 
-                    holder.recyclerAddVisitReason.setAdapter(sessionReasonAdapter);
-                    holder.recyclerAddExploration.setAdapter(sessionExplorationAdapter);
-                    holder.recyclerAddTreatment.setAdapter(sessionTreatmentAdapter);
-                }
-            }
-        });
+        holder.recyclerSessionHighligt.setAdapter(sessionHighlightAdapter);
+        holder.recyclerAddVisitReason.setAdapter(sessionReasonAdapter);
+        holder.recyclerAddExploration.setAdapter(sessionExplorationAdapter);
+        holder.recyclerAddTreatment.setAdapter(sessionTreatmentAdapter);
+
+        //sessionHighlightAdapter.notifyDataSetChanged();
+        //sessionReasonAdapter.notifyDataSetChanged();
+        //sessionExplorationAdapter.notifyDataSetChanged();
+        //sessionTreatmentAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -174,6 +177,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
     }
 
     private void setFirebase() {
@@ -191,8 +195,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
 
         final EditText editItem = dialogView.findViewById(R.id.edit_item);
 
-        //TODO separar las listas por cada objeto
-
         date = holder.textSessionDate.getText().toString();
 
         switch (position) {
@@ -200,14 +202,16 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
                 dialogBuilder.setTitle("Añadir motivo de visita");
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        reasonList.add(editItem.getText().toString().trim());
-                        session.setReasonList(reasonList);
-                        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                sessionReasonAdapter.notifyDataSetChanged();
-                            }
-                        });
+                        if (editItem.getText().toString().trim().length() != 0) {
+                            reasonList.add(editItem.getText().toString().trim());
+                            session.setReasonList(reasonList);
+                            firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    sessionReasonAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
                     }
                 });
                 break;
@@ -215,30 +219,33 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
                 dialogBuilder.setTitle("Añadir exploración");
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        explorationList.add(editItem.getText().toString().trim());
-                        session.setExplorationList(explorationList);
-                        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                sessionExplorationAdapter.notifyDataSetChanged();
-                            }
-                        });
+                        if (editItem.getText().toString().trim().length() != 0) {
+                            explorationList.add(editItem.getText().toString().trim());
+                            session.setExplorationList(explorationList);
+                            firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    sessionExplorationAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
                     }
                 });
-
                 break;
             case 2:
                 dialogBuilder.setTitle("Añadir tratamiento");
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        treatmentList.add(editItem.getText().toString().trim());
-                        session.setTreatmentList(treatmentList);
-                        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                sessionTreatmentAdapter.notifyDataSetChanged();
-                            }
-                        });
+                        if (editItem.getText().toString().trim().length() != 0) {
+                            treatmentList.add(editItem.getText().toString().trim());
+                            session.setTreatmentList(treatmentList);
+                            firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    sessionTreatmentAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
                     }
                 });
                 break;

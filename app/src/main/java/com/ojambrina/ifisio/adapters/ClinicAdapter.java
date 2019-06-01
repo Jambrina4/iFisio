@@ -35,13 +35,13 @@ public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder
 
     private String position;
     private Context context;
-    private List<String> clinicList;
+    private List<Clinic> clinicList;
     private Clinic clinic;
     private FirebaseFirestore firebaseFirestore;
     private String clinicName;
     private OnClickListener listener;
 
-    public ClinicAdapter(Context context, List<String> clinicList, OnClickListener listener) {
+    public ClinicAdapter(Context context, List<Clinic> clinicList, OnClickListener listener) {
         this.context = context;
         this.clinicList = clinicList;
         this.listener = listener;
@@ -56,13 +56,9 @@ public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
-
-        position = clinicList.get(holder.getAdapterPosition());
-        holder.textClinic.setText(position);
-
-        setFirebase();
-        getClinic();
-        clinicName = clinicList.get(holder.getAdapterPosition());
+        clinic = clinicList.get(holder.getAdapterPosition());
+        clinicName = clinic.getName();
+        holder.textClinic.setText(clinicName);
 
         holder.layoutClinic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,21 +84,6 @@ public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    private void getClinic() {
-        firebaseFirestore.collection(CLINICS).document().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                clinic = documentSnapshot.toObject(Clinic.class);
-            }
-        });
-    }
-
-    private void setFirebase() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference(CLINICS);
-        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
     public interface OnClickListener {
