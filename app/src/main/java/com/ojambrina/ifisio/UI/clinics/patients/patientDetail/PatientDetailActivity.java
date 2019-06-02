@@ -81,6 +81,7 @@ public class PatientDetailActivity extends AppCompatActivity {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context, patient, clinic_name, patientName);
         tabLayout.setupWithViewPager(pager);
         pager.setAdapter(viewPagerAdapter);
+        pager.setCurrentItem(1);
     }
 
     private void getPatient() {

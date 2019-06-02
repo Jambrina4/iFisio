@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,7 +28,6 @@ import com.ojambrina.ifisio.utils.Utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -66,9 +64,7 @@ public class FisioFragment extends Fragment {
     private List<String> explorationList = new ArrayList<>();
     private List<String> treatmentList = new ArrayList<>();
     private SessionAdapter sessionAdapter;
-    private HashMap<String, Session> sessionHashMap;
     private Session session;
-    private String currentDay;
 
     Unbinder unbinder;
 

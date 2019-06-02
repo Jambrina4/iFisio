@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +14,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Session;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +44,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     private String clinic_name;
     private String patientName;
     private String date;
-    private Session getSession;
 
     private SessionHighlightAdapter sessionHighlightAdapter;
     private SessionReasonAdapter sessionReasonAdapter;
@@ -76,8 +67,8 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
-
-        //TODO arreglar bug que en las tarjetas se muestran los datos de la sesión errónea
+        //TODO Mostrar la lista con las tarjetas nuevas en primera posición
+        //TODO arreglar bug que en las tarjetas se muestran los datos de la sesión errónea (Dándole al boton de añadir se muestra correctamente la lista)
         //TODO añadir método para ordenar las listas con session.getDateMillis
 
         setFirebase();
@@ -139,10 +130,10 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         holder.recyclerAddExploration.setAdapter(sessionExplorationAdapter);
         holder.recyclerAddTreatment.setAdapter(sessionTreatmentAdapter);
 
-        //sessionHighlightAdapter.notifyDataSetChanged();
-        //sessionReasonAdapter.notifyDataSetChanged();
-        //sessionExplorationAdapter.notifyDataSetChanged();
-        //sessionTreatmentAdapter.notifyDataSetChanged();
+        sessionHighlightAdapter.notifyDataSetChanged();
+        sessionReasonAdapter.notifyDataSetChanged();
+        sessionExplorationAdapter.notifyDataSetChanged();
+        sessionTreatmentAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -259,5 +250,4 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
-
 }
