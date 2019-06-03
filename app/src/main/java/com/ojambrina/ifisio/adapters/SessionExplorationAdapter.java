@@ -2,6 +2,7 @@ package com.ojambrina.ifisio.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,10 +68,27 @@ public class SessionExplorationAdapter extends RecyclerView.Adapter<SessionExplo
 
         holder.textDetail.setText(exploration);
 
+        //holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        highlightList.add(explorationList.get(holder.getAdapterPosition()));
+        //        session.setHighlightList(highlightList);
+        //        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
+        //    }
+        //});
+
+        //TODO ARREGLAR BUG EL ICONO NO SE MUESTRA CORRECTAMENTE AL DARLE A AÑADIR O ELIMINAR DE HIGHLIGHTLIST
+
         holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                highlightList.add(explorationList.get(holder.getAdapterPosition()));
+                if (highlightList.contains(explorationList.get(holder.getAdapterPosition()))) {
+                    highlightList.remove(explorationList.get(holder.getAdapterPosition()));
+                    holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stars_black_24dp));
+                } else {
+                    highlightList.add(explorationList.get(holder.getAdapterPosition()));
+                    holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star_black_24dp));
+                }
                 session.setHighlightList(highlightList);
                 firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
             }

@@ -58,15 +58,6 @@ public class SessionHighlightAdapter extends RecyclerView.Adapter<SessionHighlig
 
         highlight = highlightList.get(holder.getAdapterPosition());
         holder.textDetail.setText(highlight);
-
-        holder.layoutRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                highlightList.remove(highlightList.get(holder.getAdapterPosition()));
-                session.setHighlightList(highlightList);
-                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
-            }
-        });
     }
 
     @Override
@@ -80,10 +71,6 @@ public class SessionHighlightAdapter extends RecyclerView.Adapter<SessionHighlig
         ImageView imageDetail;
         @BindView(R.id.text_detail)
         TextView textDetail;
-        @BindView(R.id.image_remove)
-        ImageView imageRemove;
-        @BindView(R.id.layout_remove)
-        LinearLayout layoutRemove;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -67,9 +67,8 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
-        //TODO Mostrar la lista con las tarjetas nuevas en primera posición
+        //TODO Mostrar la lista con las tarjetas nuevas en primera posición (parametro dateMillis en cada sesión)
         //TODO arreglar bug que en las tarjetas se muestran los datos de la sesión errónea (Dándole al boton de añadir se muestra correctamente la lista)
-        //TODO añadir método para ordenar las listas con session.getDateMillis
 
         setFirebase();
         session = sessionList.get(holder.getAdapterPosition());

@@ -54,7 +54,6 @@ public class AddPatient extends AppCompatActivity {
     private Patient patient;
     private Context context;
     private AppCompatActivity contextForToolbar;
-    private HashMap<String, Patient> patientHashMap;
     private String name;
 
     @Override

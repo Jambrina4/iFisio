@@ -1,35 +1,22 @@
 package com.ojambrina.ifisio.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
-import com.ojambrina.ifisio.UI.clinics.ClinicActivity;
 import com.ojambrina.ifisio.entities.Clinic;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.ojambrina.ifisio.utils.Constants.CLINICS;
-import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
 
 public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder> {
 

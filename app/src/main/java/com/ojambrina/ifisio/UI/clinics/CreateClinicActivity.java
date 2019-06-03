@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
+import com.ojambrina.ifisio.UI.HomeActivity;
 import com.ojambrina.ifisio.entities.Clinic;
 
 import java.util.HashMap;
@@ -83,10 +84,11 @@ public class CreateClinicActivity extends AppCompatActivity {
                         if (task.getResult().exists()) {
                             Toast.makeText(context, "Ya existe una clínica con ese nombre", Toast.LENGTH_SHORT).show();
                         } else {
+                            //TODO AÑADIR CLINICA A SHARED PREFERENCES
                             addClinic();
                             firebaseFirestore.collection(CLINICS).document(name).set(clinic);
                             Toast.makeText(context, "Clínica agregada correctamente", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(context, ClinicActivity.class);
+                            Intent intent = new Intent(context, HomeActivity.class);
                             intent.putExtra(CLINIC_NAME, clinic.getName());
                             intent.putExtra(CLINIC, clinic);
                             startActivity(intent);

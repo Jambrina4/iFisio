@@ -6,45 +6,41 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     android:orientation="vertical"
-    android:weightSum="100"
-    tools:context=".UI.clinics.ConnectClinicActivity">
+    tools:context=".UI.clinics.ClinicActivity">
 
     <include layout="@layout/toolbar" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="90"
-        android:gravity="center"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <ProgressBar
-            android:id="@+id/progress_bar"
+            android:id="@+id/progress_bar_patients"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:indeterminate="true"
             android:visibility="visible" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_clinic"
+            android:id="@+id/recycler_patients"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
             android:visibility="gone"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="android.support.v7.widget.GridLayoutManager"
             tools:listitem="@layout/item_clinic" />
 
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/text_no_clinic"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="10"
-        android:gravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/dont_find_clinic"
-        android:textAlignment="center" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="end"
+            android:layout_margin="32dp"
+            app:srcCompat="@android:drawable/ic_input_add" />
+    </RelativeLayout>
 </LinearLayout>

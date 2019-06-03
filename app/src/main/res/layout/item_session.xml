@@ -77,7 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/ic_add_box_black_24dp" />
+            android:src="@drawable/ic_add_box_black_24dp" />
 
         <View
             android:layout_width="match_parent"
@@ -105,7 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/ic_add_box_black_24dp" />
+            android:src="@drawable/ic_add_box_black_24dp" />
 
         <View
             android:layout_width="match_parent"
@@ -133,7 +133,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/ic_add_box_black_24dp" />
+            android:src="@drawable/ic_add_box_black_24dp" />
     </LinearLayout>
 
 </LinearLayout>

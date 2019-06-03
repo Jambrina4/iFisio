@@ -40,7 +40,7 @@
             android:id="@+id/image_highlight"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:background="@drawable/ic_stars_black_24dp" />
+            android:src="@drawable/ic_stars_black_24dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -54,6 +54,6 @@
             android:id="@+id/image_remove"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:background="@drawable/ic_remove_circle_black_24dp" />
+            android:src="@drawable/ic_remove_circle_black_24dp" />
     </LinearLayout>
 </LinearLayout>

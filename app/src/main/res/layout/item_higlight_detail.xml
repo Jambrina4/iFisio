@@ -25,22 +25,7 @@
         android:id="@+id/text_detail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="80"
+        android:layout_weight="90"
         android:text="Destacado"
         android:visibility="visible" />
-
-
-    <LinearLayout
-        android:id="@+id/layout_remove"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="10"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/image_remove"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:background="@drawable/ic_remove_circle_black_24dp" />
-    </LinearLayout>
 </LinearLayout>
