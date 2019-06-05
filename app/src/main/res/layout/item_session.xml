@@ -27,6 +27,7 @@
             android:textStyle="bold" />
 
         <View
+            android:id="@+id/view_separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
@@ -34,7 +35,7 @@
             android:background="@android:color/holo_purple" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_session_highligt"
+            android:id="@+id/recycler_session_highlight"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"

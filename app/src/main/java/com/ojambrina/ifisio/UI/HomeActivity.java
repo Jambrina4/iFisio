@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -33,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.UI.clinics.CreateClinicActivity;
 import com.ojambrina.ifisio.UI.clinics.patients.AddPatient;
@@ -43,17 +45,20 @@ import com.ojambrina.ifisio.entities.Clinic;
 import com.ojambrina.ifisio.utils.AppPreferences;
 import com.ojambrina.ifisio.utils.Utils;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.ojambrina.ifisio.utils.Constants.CLINICS;
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_LIST;
 import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
+import static com.ojambrina.ifisio.utils.Constants.LATEST_CLINIC;
+import static com.ojambrina.ifisio.utils.Constants.NO_CLINIC_ADDED;
 import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
+import static com.ojambrina.ifisio.utils.Constants.SHARED_PREFERENCES;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -62,6 +67,10 @@ public class HomeActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.progress_bar_patients)
     ProgressBar progressBarPatients;
+    @BindView(R.id.home_text_no_data)
+    TextView homeTextNoData;
+    @BindView(R.id.drawer_text_no_data)
+    TextView drawerTextNoData;
     @BindView(R.id.recycler_patients)
     RecyclerView recyclerPatients;
     @BindView(R.id.fab)
@@ -98,20 +107,25 @@ public class HomeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
 
     //Declarations
-    List<Clinic> clinicList = new ArrayList<>();
-    List<String> patientList = new ArrayList<>();
-    ClinicAdapter clinicAdapter;
-    DatabaseReference databaseReference;
-    FirebaseFirestore firebaseFirestore;
-    FirebaseDatabase firebaseDatabase;
-    Context context;
-    AppCompatActivity contextForToolbar;
-    PatientAdapter patientAdapter;
-    Clinic clinic;
-    String clinicName;
-    String clinicPassword;
-    AppPreferences appPreferences;
-    FirebaseUser firebaseUser;
+    private List<Clinic> clinicList = new ArrayList<>();
+    private List<Clinic> clinicListPreferences = new ArrayList<>();
+    private List<String> patientList = new ArrayList<>();
+    private ClinicAdapter clinicAdapter;
+    private DatabaseReference databaseReference;
+    private FirebaseFirestore firebaseFirestore;
+    private FirebaseDatabase firebaseDatabase;
+    private Context context;
+    private AppCompatActivity contextForToolbar;
+    private PatientAdapter patientAdapter;
+    private Clinic clinic;
+    private String clinicName;
+    private String latestClinic;
+    private String clinicPassword;
+    private AppPreferences appPreferences;
+    private SharedPreferences sharedPreferences;
+    private FirebaseUser firebaseUser;
+    private String name;
+    private boolean isValidClinicName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +136,10 @@ public class HomeActivity extends AppCompatActivity {
         context = this;
         contextForToolbar = this;
         appPreferences = new AppPreferences();
+        sharedPreferences = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-        clinicName = "Clinica Alfa";
+        //SHAREDPREFERENCES
+        latestClinic = sharedPreferences.getString(LATEST_CLINIC, NO_CLINIC_ADDED);
 
         setFirebase();
         setToolbar();
@@ -148,36 +164,67 @@ public class HomeActivity extends AppCompatActivity {
     private void setToolbar() {
         Utils.configToolbar(contextForToolbar, toolbar);
         textEmail.setText(firebaseUser.getEmail());
+        if (latestClinic.equals(NO_CLINIC_ADDED)) {
+            toolbar.setTitle(null);
+        } else {
+            toolbar.setTitle(latestClinic);
+        }
     }
 
     private void setDrawerAdapter() {
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         toggle.getDrawerArrowDrawable().setColor(getResources().getColor(android.R.color.white));
 
-        clinicAdapter = new ClinicAdapter(context, clinicList, new ClinicAdapter.OnClickListener() {
+        clinicAdapter = new ClinicAdapter(context, clinicListPreferences, sharedPreferences, new ClinicAdapter.OnClickListener() {
             @Override
             public void onClick(int position, Clinic clinic) {
-                clinicName = clinicList.get(position).getName();
+                latestClinic = clinicListPreferences.get(position).getName();
+                toolbar.setTitle(latestClinic);
 
+                if (sharedPreferences.getString(LATEST_CLINIC, "").isEmpty()) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(LATEST_CLINIC, latestClinic);
+                    editor.apply();
+                } else {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(LATEST_CLINIC, latestClinic);
+                    editor.apply();
+                }
+
+                setPatientList();
+                patientAdapter.notifyDataSetChanged();
+                drawerLayout.closeDrawer(Gravity.START);
             }
         });
         recyclerClinic.setAdapter(clinicAdapter);
     }
 
     private void setPatientAdapter() {
-        //TODO el valor de clinicName SUSTITUIR POR CLINICA SELECCIONADA
-
-        patientAdapter = new PatientAdapter(context, patientList, clinicName);
+        patientAdapter = new PatientAdapter(context, patientList, latestClinic);
         GridLayoutManager layout = new GridLayoutManager(context, 2);
         recyclerPatients.setLayoutManager(layout);
         recyclerPatients.setAdapter(patientAdapter);
     }
 
     private void setClinicList() {
-        //TODO: Futura Update - Guardar en shared preferences la lista de clinicas que he añadido para filtrar y que solo salgan las mías o un EditText para filtrar en la lista en caso de haber muchas
+        if (!sharedPreferences.getString(CLINIC_LIST, "").isEmpty()) {
+            clinicListPreferences.clear();
+            Gson gson = new Gson();
+            String json = sharedPreferences.getString(CLINIC_LIST, "");
+            Type type = new TypeToken<List<Clinic>>() {
+            }.getType();
+            clinicListPreferences.addAll(gson.fromJson(json, type));
+            drawerTextNoData.setVisibility(View.GONE);
+            progressBarDrawer.setVisibility(View.GONE);
+            recyclerClinic.setVisibility(View.VISIBLE);
+            clinicAdapter.notifyDataSetChanged();
+        } else {
+            progressBarDrawer.setVisibility(View.GONE);
+            drawerTextNoData.setVisibility(View.VISIBLE);
+        }
+
         firebaseFirestore.collection(CLINICS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -189,20 +236,15 @@ public class HomeActivity extends AppCompatActivity {
                 List<Clinic> list = queryDocumentSnapshots.toObjects(Clinic.class);
 
                 clinicList.addAll(list);
-                progressBarDrawer.setVisibility(View.GONE);
-                recyclerClinic.setVisibility(View.VISIBLE);
-                clinicAdapter.notifyDataSetChanged();
             }
         });
     }
 
     private void setPatientList() {
-        //TODO el valor de clinicName SUSTITUIR POR CLINICA SELECCIONADA
-
-        firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        firebaseFirestore.collection(CLINICS).document(latestClinic).collection(PATIENTS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@android.support.annotation.Nullable QuerySnapshot value,
-                                @android.support.annotation.Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w("ERROR", "Listen failed.", e);
                     return;
@@ -217,7 +259,15 @@ public class HomeActivity extends AppCompatActivity {
                 patientList.clear();
                 patientList.addAll(list);
                 progressBarPatients.setVisibility(View.GONE);
-                recyclerPatients.setVisibility(View.VISIBLE);
+
+                if (patientList.size() == 0) {
+                    homeTextNoData.setVisibility(View.VISIBLE);
+                    recyclerPatients.setVisibility(View.GONE);
+                } else {
+                    homeTextNoData.setVisibility(View.GONE);
+                    recyclerPatients.setVisibility(View.VISIBLE);
+                }
+
                 patientAdapter.notifyDataSetChanged();
                 Log.d("INFO", "Current patients in clinic: " + list);
             }
@@ -244,7 +294,7 @@ public class HomeActivity extends AppCompatActivity {
                 dialog.setContentView(R.layout.dialog_connect_clinic);
                 dialog.setCancelable(false);
 
-                TextView editName = dialog.findViewById(R.id.edit_clinic_name);
+                EditText editName = dialog.findViewById(R.id.edit_clinic_name);
                 EditText editPassword = dialog.findViewById(R.id.edit_clinic_password);
                 ImageView imageCancel = dialog.findViewById(R.id.image_close);
                 TextView textSend = dialog.findViewById(R.id.text_send);
@@ -259,20 +309,76 @@ public class HomeActivity extends AppCompatActivity {
                 textSend.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        clinicName = editName.getText().toString().trim();
-                        clinicPassword = editPassword.getText().toString().trim();
-                        if (clinicPassword.length() > 0) {
-                            if (clinicPassword.equals(clinic.getPassword())) {
-                                //TODO REVISAR FORMA DE CONEXION CON LA CLINICA
-                                //TODO AÑADIR LOS DATOS DE LA CLINICA A UNA LISTA DE SHARED PREFERENCES PARA MOSTRAR EN EL RECYCLERVIEW
+                        validateClinicName(editName);
+
+                        //TODO Arreglar bug no se actualiza la información al agregar la clinica
+
+                        if (isValidClinicName) {
+                            clinicName = editName.getText().toString().trim();
+                            clinicPassword = editPassword.getText().toString().trim();
+                            if (clinicPassword.length() > 0) {
+                                for (int i = 0; i < clinicList.size(); i++) {
+                                    if (clinicList.get(i).getName().equals(clinicName)) {
+                                        if (clinicList.get(i).getPassword().equals(clinicPassword)) {
+                                            if (sharedPreferences.getString(CLINIC_LIST, "").isEmpty()) {
+                                                clinicListPreferences.clear();
+                                                Gson gson = new Gson();
+                                                clinicListPreferences.add(clinicList.get(i));
+                                                String listOfClinics = gson.toJson(clinicListPreferences);
+
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                editor.putString(CLINIC_LIST, listOfClinics);
+                                                editor.putString(LATEST_CLINIC, clinicList.get(i).getName());
+                                                editor.apply();
+                                                dialog.dismiss();
+
+                                                setClinicList();
+                                                setPatientList();
+                                                break;
+                                            } else {
+                                                clinicListPreferences.clear();
+                                                Gson gson = new Gson();
+                                                String json = sharedPreferences.getString(CLINIC_LIST, "");
+
+                                                Type type = new TypeToken<List<Clinic>>() {
+                                                }.getType();
+                                                clinicListPreferences = gson.fromJson(json, type);
+
+                                                clinicListPreferences.add(clinicList.get(i));
+                                                String listOfClinics = gson.toJson(clinicListPreferences);
+
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                editor.putString(CLINIC_LIST, listOfClinics);
+                                                editor.putString(LATEST_CLINIC, clinicList.get(i).getName());
+                                                editor.apply();
+                                                dialog.dismiss();
+
+                                                setClinicList();
+                                                setPatientList();
+                                                break;
+                                            }
+                                        } else {
+                                            editName.setError("Datos de inicio de sesion incorrectos");
+                                            editPassword.setError("Datos de inicio de sesion incorrectos");
+                                            editName.requestFocus();
+                                            break;
+                                        }
+                                    } else {
+                                        editName.setError("Datos de inicio de sesion incorrectos");
+                                        editPassword.setError("Datos de inicio de sesion incorrectos");
+                                        editName.requestFocus();
+                                    }
+                                }
                             } else {
+                                editName.setError("Datos de inicio de sesion incorrectos");
                                 editPassword.setError("Datos de inicio de sesion incorrectos");
-                                editPassword.requestFocus();
+                                editName.requestFocus();
                             }
                         } else {
                             editPassword.setError("El campo no puede estar vacío");
-                            editPassword.requestFocus();
+                            editName.requestFocus();
                         }
+
                     }
                 });
                 dialog.show();
@@ -307,10 +413,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void addPatient() {
-        //TODO el valor de clinicName SUSTITUIR POR CLINICA SELECCIONADA
-
         Intent intent = new Intent(context, AddPatient.class);
-        intent.putExtra(CLINIC_NAME, clinicName);
+        intent.putExtra(CLINIC_NAME, latestClinic);
         startActivity(intent);
     }
 
@@ -320,5 +424,17 @@ public class HomeActivity extends AppCompatActivity {
             drawerLayout.closeDrawers();
         else
             super.onBackPressed();
+    }
+
+    //Validations
+    private void validateClinicName(EditText editClinicName) {
+        name = editClinicName.getText().toString().trim();
+        if (name.length() > 0) {
+            isValidClinicName = true;
+        } else {
+            editClinicName.requestFocus();
+            editClinicName.setError("El campo nombre no puede estar vacío");
+            isValidClinicName = false;
+        }
     }
 }

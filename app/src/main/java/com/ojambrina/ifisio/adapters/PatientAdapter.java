@@ -49,7 +49,10 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.ViewHold
 
         holder.textPatient.setText(position);
 
-        //crear metodo loadGlide en utils para cargar imagen del paciente
+        //TODO DESCOMENTAR CUANDO CONSIGA ALMACENAR LA IMAGEN
+        //Glide.with(context)
+        //        .load(patient.getProfileImage())
+        //        .into(holder.imagePatient);
         holder.layoutPatient.setOnClickListener(v -> {
             Intent intent = new Intent(context, PatientDetailActivity.class);
             intent.putExtra(PATIENT_NAME, position);

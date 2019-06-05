@@ -27,8 +27,12 @@ import com.ojambrina.ifisio.entities.Session;
 import com.ojambrina.ifisio.utils.Utils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -76,6 +80,7 @@ public class FisioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fisio, container, false);
         unbinder = ButterKnife.bind(this, view);
+
         if (getArguments() != null) {
             patient = (Patient) getArguments().get(PATIENT);
             clinic_name = (String) getArguments().get(CLINIC_NAME);
@@ -93,7 +98,7 @@ public class FisioFragment extends Fragment {
     }
 
     private void setAdapter() {
-        sessionAdapter = new SessionAdapter(context, session, sessionList, clinic_name, patientName);
+        sessionAdapter = new SessionAdapter(context, session, sessionList, clinic_name, patientName, firebaseFirestore);
         recyclerSession.setAdapter(sessionAdapter);
     }
 
@@ -128,6 +133,7 @@ public class FisioFragment extends Fragment {
 
                 sessionList.clear();
                 sessionList.addAll(list);
+                sortSessionsByDate(sessionList);
                 sessionAdapter.notifyDataSetChanged();
             }
         });
@@ -159,5 +165,22 @@ public class FisioFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    private List<Session> sortSessionsByDate(List<Session> sessionList) {
+        Collections.sort(sessionList, (o1, o2) -> {
+            long timeMillis1 = o1.getDateMillis();
+            long timeMillis2 = o2.getDateMillis();
+
+            if (timeMillis1 > timeMillis2) {
+                return 1;
+            } else if (timeMillis1 < timeMillis2) {
+                return -1;
+            } else return 0;
+        });
+
+        Collections.reverse(sessionList);
+
+        return sessionList;
     }
 }

@@ -59,7 +59,6 @@ public class RegisterActivity extends AppCompatActivity {
     //Declarations
     Context context;
     AppPreferences appPreferences;
-    Utils utils;
     Proffesional proffesional;
 
     FirebaseAuth firebaseAuth;
@@ -68,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     Map<String, Proffesional> proffesionals;
     String username, name, surname, identityNumber, phone, email, password;
+    boolean isValidName, isValidSurname, isValidIdentityNumber, isValidPhone, isValidEmail, isValidPassword, isValidPasswordRepeat;
     Dialog dialog;
 
     @Override
@@ -78,7 +78,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         context = this;
         appPreferences = new AppPreferences();
-        utils = new Utils();
 
         setFirebase();
         listeners();
@@ -95,42 +94,40 @@ public class RegisterActivity extends AppCompatActivity {
         layoutRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 getProffesional();
 
-                if (validateName(editName) &&
-                        validateSurname(editSurname) &&
-                        validateIdentityNumber(editIdentityNumber) &&
-                        validateEmail(editEmail) &&
-                        validatePhone(editPhone) &&
-                        validatePassword(editPassword) &&
-                        validatePasswordRepeat(editPasswordRepeat)) {
+                validatePasswordRepeat(editPasswordRepeat);
+                validatePassword(editPassword);
+                validatePhone(editPhone);
+                validateEmail(editEmail);
+                validateIdentityNumber(editIdentityNumber);
+                validateSurname(editSurname);
+                validateName(editName);
 
-                    dialog = utils.showProgressDialog(context, "Creando usuario");
+                if (isValidName && isValidSurname && isValidIdentityNumber && isValidEmail && isValidPhone && isValidPassword && isValidPasswordRepeat){
+                    dialog = Utils.showProgressDialog(context, "Creando usuario");
                     dialog.show();
 
-                    firebaseAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        dialog.dismiss();
-                                        appPreferences.setEmail(email);
+                    firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                dialog.dismiss();
+                                appPreferences.setEmail(email);
 
-                                        Log.d("REGISTRO", "createUserWithEmail:onComplete:" + task.isSuccessful());
-                                        firebaseFirestore.collection("profesionales").document(username).set(proffesionals);
-                                        FirebaseAuth.getInstance().signOut();
+                                Log.d("REGISTRO", "createUserWithEmail:onComplete:" + task.isSuccessful());
+                                firebaseFirestore.collection("profesionales").document(username).set(proffesionals);
+                                FirebaseAuth.getInstance().signOut();
 
-                                        Intent intent = new Intent(context, LoginActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        dialog.dismiss();
-                                        Toast.makeText(context, "Refistro fallido." + task.getException(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                                Intent intent = new Intent(context, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                dialog.dismiss();
+                                Toast.makeText(context, "Refistro fallido." + task.getException(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -173,28 +170,31 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
     //VALIDATIONS
-    private boolean validateName(EditText editName) {
+    private void validateName(EditText editName) {
         name = editName.getText().toString().trim();
         if (editName.length() > 0) {
-            return true;
+            isValidName = true;
         } else {
+            editName.requestFocus();
             editName.setError("El campo nombre no puede estar vacío");
-            return false;
+            isValidName = false;
         }
     }
 
-    private boolean validateSurname(EditText editSurname) {
+    private void validateSurname(EditText editSurname) {
         surname = editSurname.getText().toString().trim();
         if (surname.length() > 0) {
-            return true;
+            isValidSurname = true;
         } else {
+            editSurname.requestFocus();
             editSurname.setError("El campo apellidos no puede estar vacío");
-            return false;
+            isValidSurname = false;
         }
     }
 
-    private boolean validateIdentityNumber(EditText editIdentityNumber) {
+    private void validateIdentityNumber(EditText editIdentityNumber) {
         identityNumber = editIdentityNumber.getText().toString().trim();
         Pattern pattern = Pattern.compile("(\\d{1,8})([TRWAGMYFPDXBNJZSQVHLCKEtrwagmyfpdxbnjzsqvhlcke])");
         Matcher matcher = pattern.matcher(identityNumber);
@@ -206,71 +206,80 @@ public class RegisterActivity extends AppCompatActivity {
             index = index % 23;
             String reference = patternLetters.substring(index, index + 1);
             if (reference.equalsIgnoreCase(letter)) {
-                return true;
+                isValidIdentityNumber = true;
             } else {
+                editIdentityNumber.requestFocus();
                 editIdentityNumber.setError("Letra del DNI incorrecta");
-                return false;
+                isValidIdentityNumber = false;
             }
         } else {
+            editIdentityNumber.requestFocus();
             editIdentityNumber.setError("DNI no válido");
-            return false;
+            isValidIdentityNumber = false;
         }
     }
 
-    private boolean validatePhone(EditText editPhone) {
+    private void validatePhone(EditText editPhone) {
         phone = editPhone.getText().toString().trim();
         if (phone.length() > 0) {
             if (android.util.Patterns.PHONE.matcher(phone).matches()) {
-                return true;
+                isValidPhone = true;
             } else {
+                editPhone.requestFocus();
                 editPhone.setError("Número de teléfono no válido");
-                return false;
+                isValidPhone = false;
             }
         } else {
+            editPhone.requestFocus();
             editPhone.setError("El campo teléfono no puede estar vacío");
-            return false;
+            isValidPhone = false;
         }
     }
 
-    private boolean validateEmail(EditText editEmail) {
+    private void validateEmail(EditText editEmail) {
         email = editEmail.getText().toString().trim();
         if (email.length() > 0) {
             if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                return true;
+                isValidEmail = true;
             } else {
+                editEmail.requestFocus();
                 editEmail.setError("Email no válido");
-                return false;
+                isValidEmail = false;
             }
         } else {
+            editEmail.requestFocus();
             editEmail.setError("El campo email no puede estar vacío");
-            return false;
+            isValidEmail = false;
         }
     }
 
-    private boolean validatePassword(EditText editPassword) {
+    private void validatePassword(EditText editPassword) {
         password = editPassword.getText().toString().trim();
         if (password.length() >= 8) {
-            return true;
+            isValidPassword = true;
         } else {
+            editPassword.requestFocus();
             editPassword.setError("Al menos 8 caracteres");
-            return false;
+            isValidPassword = false;
         }
     }
 
-    private boolean validatePasswordRepeat(EditText editPasswordRepeat) {
+    private void validatePasswordRepeat(EditText editPasswordRepeat) {
         password = editPassword.getText().toString().trim();
         String passwordRepeat = editPasswordRepeat.getText().toString().trim();
 
         if (passwordRepeat.length() >= 8) {
             if (passwordRepeat.equals(password)) {
-                return true;
+                isValidPasswordRepeat = true;
             } else {
+                editPasswordRepeat.requestFocus();
                 editPasswordRepeat.setError("Las contraseñas deben coincidir");
-                return false;
+                isValidPasswordRepeat = false;
             }
         } else {
+            editPasswordRepeat.requestFocus();
             editPasswordRepeat.setError("Al menos 8 caracteres");
-            return false;
+            isValidPasswordRepeat = false;
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.ojambrina.ifisio.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.ojambrina.ifisio.utils.Constants.CLINIC_LIST;
+import static com.ojambrina.ifisio.utils.Constants.LATEST_CLINIC;
+
 public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder> {
 
     private String position;
@@ -27,10 +32,12 @@ public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder
     private FirebaseFirestore firebaseFirestore;
     private String clinicName;
     private OnClickListener listener;
+    private SharedPreferences sharedPreferences;
 
-    public ClinicAdapter(Context context, List<Clinic> clinicList, OnClickListener listener) {
+    public ClinicAdapter(Context context, List<Clinic> clinicList, SharedPreferences sharedPreferences, OnClickListener listener) {
         this.context = context;
         this.clinicList = clinicList;
+        this.sharedPreferences = sharedPreferences;
         this.listener = listener;
     }
 

@@ -87,9 +87,6 @@ public class PatientDetailActivity extends AppCompatActivity {
         firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                //TODO pasar la información a los fragments correspondientes y adaptar los pager
-
                 patient = documentSnapshot.toObject(Patient.class);
                 if (patient != null) {
                     String test = patient.getName();

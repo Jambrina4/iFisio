@@ -10,18 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Session;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -34,8 +28,8 @@ import static com.ojambrina.ifisio.utils.Constants.SESSION_LIST;
 public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdapter.ViewHolder> {
 
     private Context context;
-    private List<String> reasonList;
-    private List<String> highlightList;
+    private List<String> reasonList = new ArrayList<>();
+    private List<String> highlightList = new ArrayList<>();
     private String reason;
     private FirebaseFirestore firebaseFirestore;
     private String clinic_name;
@@ -43,14 +37,17 @@ public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdap
     private String date;
     private Session session;
 
-    public SessionReasonAdapter(Context context, List<String> reasonList, List<String> highlightList, Session session, String clinic_name, String patientName, String date) {
+    public SessionReasonAdapter(Context context, Session session, String clinic_name, String patientName, String date, FirebaseFirestore firebaseFirestore) {
         this.context = context;
-        this.reasonList = reasonList;
-        this.highlightList = highlightList;
         this.session = session;
         this.clinic_name = clinic_name;
         this.patientName = patientName;
         this.date = date;
+        this.firebaseFirestore = firebaseFirestore;
+        highlightList.clear();
+        highlightList.addAll(session.getHighlightList());
+        reasonList.clear();
+        reasonList.addAll(session.getReasonList());
     }
 
     @NonNull
@@ -62,32 +59,23 @@ public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdap
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
-        setFirebase();
-
         reason = reasonList.get(holder.getAdapterPosition());
 
         holder.textDetail.setText(reason);
 
-        //holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        highlightList.add(reasonList.get(holder.getAdapterPosition()));
-        //        session.setHighlightList(highlightList);
-        //        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
-        //    }
-        //});
-
-        //TODO ARREGLAR BUG EL ICONO NO SE MUESTRA CORRECTAMENTE AL DARLE A AÑADIR O ELIMINAR DE HIGHLIGHTLIST
+        if (highlightList.contains(reasonList.get(holder.getAdapterPosition()))) {
+            holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stars_black_24dp));
+        } else {
+            holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star_black_24dp));
+        }
 
         holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (highlightList.contains(reasonList.get(holder.getAdapterPosition()))) {
                     highlightList.remove(reasonList.get(holder.getAdapterPosition()));
-                    holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stars_black_24dp));
                 } else {
                     highlightList.add(reasonList.get(holder.getAdapterPosition()));
-                    holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star_black_24dp));
                 }
                 session.setHighlightList(highlightList);
                 firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
@@ -97,7 +85,11 @@ public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdap
         holder.layoutRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (highlightList.contains(reasonList.get(holder.getAdapterPosition()))) {
+                    highlightList.remove(reasonList.get(holder.getAdapterPosition()));
+                }
                 reasonList.remove(reasonList.get(holder.getAdapterPosition()));
+                session.setHighlightList(highlightList);
                 session.setReasonList(reasonList);
                 firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
             }
@@ -128,11 +120,5 @@ public class SessionReasonAdapter extends RecyclerView.Adapter<SessionReasonAdap
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    private void setFirebase() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference(CLINICS);
-        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 }

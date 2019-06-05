@@ -35,7 +35,8 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     // Returns total number of pages
     @Override
     public int getCount() {
-        return 3;
+        //return 3;
+        return 2;
     }
 
     // Returns the fragment to display for that page
@@ -69,8 +70,8 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
                 return context.getString(R.string.history);
             case 1:
                 return context.getString(R.string.fisiotherapy);
-            case 2:
-                return context.getString(R.string.psychology);
+            //case 2:
+                //return context.getString(R.string.psychology);
             default:
                 return null;
         }

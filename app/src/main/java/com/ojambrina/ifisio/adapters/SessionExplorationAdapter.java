@@ -11,12 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Session;
@@ -35,22 +29,25 @@ public class SessionExplorationAdapter extends RecyclerView.Adapter<SessionExplo
 
     private Context context;
     private String exploration;
-    private List<String> explorationList;
-    private List<String> highlightList;
+    private List<String> explorationList = new ArrayList<>();
+    private List<String> highlightList = new ArrayList<>();
     private FirebaseFirestore firebaseFirestore;
     private String clinic_name;
     private String patientName;
     private String date;
     private Session session;
 
-    public SessionExplorationAdapter(Context context, List<String> explorationList, List<String> highlightList, Session session, String clinic_name, String patientName, String date) {
+    public SessionExplorationAdapter(Context context, Session session, String clinic_name, String patientName, String date, FirebaseFirestore firebaseFirestore) {
         this.context = context;
-        this.explorationList = explorationList;
-        this.highlightList = highlightList;
         this.session = session;
         this.clinic_name = clinic_name;
         this.patientName = patientName;
         this.date = date;
+        this.firebaseFirestore = firebaseFirestore;
+        highlightList.clear();
+        highlightList.addAll(session.getHighlightList());
+        explorationList.clear();
+        explorationList.addAll(session.getExplorationList());
     }
 
     @NonNull
@@ -62,32 +59,23 @@ public class SessionExplorationAdapter extends RecyclerView.Adapter<SessionExplo
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
-        setFirebase();
-
         exploration = explorationList.get(holder.getAdapterPosition());
 
         holder.textDetail.setText(exploration);
 
-        //holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        highlightList.add(explorationList.get(holder.getAdapterPosition()));
-        //        session.setHighlightList(highlightList);
-        //        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
-        //    }
-        //});
-
-        //TODO ARREGLAR BUG EL ICONO NO SE MUESTRA CORRECTAMENTE AL DARLE A AÑADIR O ELIMINAR DE HIGHLIGHTLIST
+        if (highlightList.contains(explorationList.get(holder.getAdapterPosition()))) {
+            holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stars_black_24dp));
+        } else {
+            holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star_black_24dp));
+        }
 
         holder.layoutHighlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (highlightList.contains(explorationList.get(holder.getAdapterPosition()))) {
                     highlightList.remove(explorationList.get(holder.getAdapterPosition()));
-                    holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_stars_black_24dp));
                 } else {
                     highlightList.add(explorationList.get(holder.getAdapterPosition()));
-                    holder.imageHighlight.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_star_black_24dp));
                 }
                 session.setHighlightList(highlightList);
                 firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
@@ -97,7 +85,11 @@ public class SessionExplorationAdapter extends RecyclerView.Adapter<SessionExplo
         holder.layoutRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (highlightList.contains(explorationList.get(holder.getAdapterPosition()))) {
+                    highlightList.remove(explorationList.get(holder.getAdapterPosition()));
+                }
                 explorationList.remove(explorationList.get(holder.getAdapterPosition()));
+                session.setHighlightList(highlightList);
                 session.setExplorationList(explorationList);
                 firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session);
             }
@@ -128,11 +120,5 @@ public class SessionExplorationAdapter extends RecyclerView.Adapter<SessionExplo
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    private void setFirebase() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference(CLINICS);
-        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 }

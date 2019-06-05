@@ -176,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //Validations
+    //VALIDATIONS
     private boolean validateEmail(EditText editEmail) {
         email = editEmail.getText().toString().trim();
         if (email.length() > 0) {

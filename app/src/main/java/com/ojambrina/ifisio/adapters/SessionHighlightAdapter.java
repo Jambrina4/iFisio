@@ -7,42 +7,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.ojambrina.ifisio.R;
 import com.ojambrina.ifisio.entities.Session;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.ojambrina.ifisio.utils.Constants.CLINICS;
-import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
-import static com.ojambrina.ifisio.utils.Constants.SESSION_LIST;
 
 public class SessionHighlightAdapter extends RecyclerView.Adapter<SessionHighlightAdapter.ViewHolder> {
 
     private Context context;
     private Session session;
     private String highlight;
-    private List<String> highlightList;
-    private String clinic_name;
-    private String patientName;
-    private String date;
-    private FirebaseFirestore firebaseFirestore;
+    private List<String> highlightList = new ArrayList<>();
 
-    public SessionHighlightAdapter(Context context, List<String> highlightList, Session session, String clinic_name, String patientName, String date) {
+    public SessionHighlightAdapter(Context context, Session session) {
         this.context = context;
-        this.highlightList = highlightList;
         this.session = session;
-        this.clinic_name = clinic_name;
-        this.patientName = patientName;
-        this.date = date;
+        highlightList.clear();
+        highlightList.addAll(session.getHighlightList());
     }
 
     @NonNull
@@ -54,8 +41,6 @@ public class SessionHighlightAdapter extends RecyclerView.Adapter<SessionHighlig
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int i) {
-        setFirebase();
-
         highlight = highlightList.get(holder.getAdapterPosition());
         holder.textDetail.setText(highlight);
     }
@@ -76,11 +61,5 @@ public class SessionHighlightAdapter extends RecyclerView.Adapter<SessionHighlig
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    private void setFirebase() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference(CLINICS);
-        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 }
