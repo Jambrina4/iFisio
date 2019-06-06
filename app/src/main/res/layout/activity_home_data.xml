@@ -40,7 +40,7 @@
             android:orientation="vertical"
             android:visibility="gone"
             app:layoutManager="android.support.v7.widget.GridLayoutManager"
-            tools:listitem="@layout/item_clinic" />
+            tools:listitem="@layout/item_patient" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

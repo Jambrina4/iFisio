@@ -8,7 +8,6 @@ public class Patient implements Serializable {
     private String name;
     private String surname;
     private String bornDate;
-    private String identityNumber;
     private String phone;
     private String email;
     private String profession;
@@ -44,14 +43,6 @@ public class Patient implements Serializable {
 
     public void setBornDate(String bornDate) {
         this.bornDate = bornDate;
-    }
-
-    public String getIdentityNumber() {
-        return identityNumber;
-    }
-
-    public void setIdentityNumber(String identityNumber) {
-        this.identityNumber = identityNumber;
     }
 
     public String getPhone() {

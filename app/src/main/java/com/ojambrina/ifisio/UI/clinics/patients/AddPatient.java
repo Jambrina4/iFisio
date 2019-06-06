@@ -2,6 +2,7 @@ package com.ojambrina.ifisio.UI.clinics.patients;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -30,8 +32,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -50,8 +53,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,12 +60,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.ojambrina.ifisio.utils.Constants.CLINICS;
 import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
+import static com.ojambrina.ifisio.utils.Constants.NO_CLINIC_ADDED;
 import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
 import static com.ojambrina.ifisio.utils.RequestCodes.IMAGE_FROM_CAMERA;
 import static com.ojambrina.ifisio.utils.RequestCodes.IMAGE_FROM_GALLERY;
 
 public class AddPatient extends AppCompatActivity {
-
 
     //Butterknife
     @BindView(R.id.toolbar)
@@ -75,8 +76,6 @@ public class AddPatient extends AppCompatActivity {
     EditText editPatientSurname;
     @BindView(R.id.edit_patient_born_date)
     EditText editPatientBornDate;
-    @BindView(R.id.edit_patient_identity_number)
-    EditText editPatientIdentityNumber;
     @BindView(R.id.edit_patient_phone)
     EditText editPatientPhone;
     @BindView(R.id.edit_patient_email)
@@ -106,8 +105,8 @@ public class AddPatient extends AppCompatActivity {
     private Patient patient;
     private Context context;
     private AppCompatActivity contextForToolbar;
-    private String name, surname, bornDate, identityNumber, phone, email, profession;
-    private boolean isValidPatientName, isValidPatientSurname, isValidPatientBornDate, isValidPatientIdentityNumber, isValidPatientPhone, isValidPatientEmail, isValidPatientProfession;
+    private String name, surname, bornDate, phone, email, profession;
+    private boolean isValidPatientName, isValidPatientSurname, isValidPatientBornDate, isValidPatientPhone, isValidPatientEmail, isValidPatientProfession;
     private List<String> regularMedicationList = new ArrayList<>();
     private List<String> medicConditionsList = new ArrayList<>();
     private List<String> regularExerciseList = new ArrayList<>();
@@ -116,6 +115,7 @@ public class AddPatient extends AppCompatActivity {
     private String cameraPath;
     private File profilePath;
     private Uri imageUri;
+    private Uri getImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +177,6 @@ public class AddPatient extends AppCompatActivity {
                 name = editPatientName.getText().toString().trim();
                 surname = editPatientSurname.getText().toString().trim();
                 bornDate = editPatientBornDate.getText().toString().trim();
-                identityNumber = editPatientIdentityNumber.getText().toString().trim();
                 phone = editPatientPhone.getText().toString().trim();
                 email = editPatientEmail.getText().toString().trim();
                 profession = editPatientProfession.getText().toString().trim();
@@ -185,52 +184,60 @@ public class AddPatient extends AppCompatActivity {
                 validateProfession(editPatientProfession);
                 validateEmail(editPatientEmail);
                 validatePhone(editPatientPhone);
-                validateIdentityNumber(editPatientIdentityNumber);
                 validateBornDate(editPatientBornDate);
                 validateSurname(editPatientSurname);
                 validateName(editPatientName);
 
-                if (isValidPatientName && isValidPatientSurname && isValidPatientBornDate && isValidPatientIdentityNumber && isValidPatientPhone && isValidPatientEmail && isValidPatientProfession) {
+                if (isValidPatientName && isValidPatientSurname && isValidPatientBornDate && isValidPatientPhone && isValidPatientEmail && isValidPatientProfession) {
 
-                    //TODO TERMINAR SUBIDA DE IMAGEN A FIREBASE CLOUD STORAGE
-                    //imageUri.getPath();
+                    if (clinic_name.equals(NO_CLINIC_ADDED)) {
+                        Toast.makeText(context, "Debes registrar una clínica para poder agregar un paciente", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (imageUri != null) {
+                            StorageReference sr = storageReference.child(System.currentTimeMillis() + "." + getExtension(imageUri));
+                            sr.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Task<Uri> uri = sr.getDownloadUrl();
+                                    if (uri.isComplete()) {
+                                        getImageUri = uri.getResult();
 
-                    //UploadTask uploadTask = storageReference.putFile(imageUri);
-                    //Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    //    @Override
-                    //    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    //        if (!task.isSuccessful()) {
-                    //            throw task.getException();
-                    //        }
-
-                    //        // Continue with the task to get the download URL
-                    //        return storageReference.getDownloadUrl();
-                    //    }
-                    //}).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    //    @Override
-                    //    public void onComplete(@NonNull Task<Uri> task) {
-                    //        if (task.isSuccessful()) {
-                    //            Uri downloadUri = task.getResult();
-                    //        } else {
-                    //            Log.d("TAG", task.getException().getMessage());
-                    //            // Handle failures
-                    //            // ...
-                    //        }
-                    //    }
-                    //});
-
-                    firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.getResult().exists()) {
-                                Toast.makeText(context, "Ya existe un paciente con ese nombre", Toast.LENGTH_SHORT).show();
-                            } else {
-                                addPatient();
-                                firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patient);
-                                finish();
-                            }
+                                        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if (task.getResult().exists()) {
+                                                    Toast.makeText(context, "Ya existe un paciente con ese nombre", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    addPatient();
+                                                    firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patient);
+                                                    finish();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(context, "Ha ocurrido un problema al agregar el paciente, inténtalo de nuevo", Toast.LENGTH_SHORT).show();
+                                    Log.d("TAG", e.getMessage());
+                                }
+                            });
+                        } else {
+                            firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.getResult().exists()) {
+                                        Toast.makeText(context, "Ya existe un paciente con ese nombre", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        addPatient();
+                                        firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(name).set(patient);
+                                        finish();
+                                    }
+                                }
+                            });
                         }
-                    });
+                    }
                 }
             }
         });
@@ -247,8 +254,7 @@ public class AddPatient extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("clinicas");
         firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseStorage = FirebaseStorage.getInstance();
-        storageReference = firebaseStorage.getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
     }
 
     private void getData() {
@@ -262,7 +268,6 @@ public class AddPatient extends AppCompatActivity {
         patient.setName(name);
         patient.setSurname(surname);
         patient.setBornDate(bornDate);
-        patient.setIdentityNumber(identityNumber);
         patient.setPhone(phone);
         patient.setEmail(email);
         patient.setProfession(profession);
@@ -271,9 +276,9 @@ public class AddPatient extends AppCompatActivity {
         patient.setRegularExercise(regularExerciseList);
         patient.setSurgicalOperations(surgicalOperationsList);
         patient.setMedicExamination(medicExaminationList);
-
-        //TODO DESCOMENTAR CUANDO ESTE COMPLETADA LA SUBIDA DE IMAGENES
-        //patient.setProfileImage(imageUri.getPath());
+        if (imageUri != null) {
+            patient.setProfileImage(String.valueOf(getImageUri));
+        }
     }
 
     private void setToolbar() {
@@ -380,6 +385,12 @@ public class AddPatient extends AppCompatActivity {
         }
     }
 
+    private String getExtension(Uri uri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
     //VALIDATIONS
     private void validateName(EditText editPatientName) {
         name = editPatientName.getText().toString().trim();
@@ -411,31 +422,6 @@ public class AddPatient extends AppCompatActivity {
             editPatientBornDate.requestFocus();
             editPatientBornDate.setError("El campo fecha de nacimiento no puede estar vacío");
             isValidPatientBornDate = false;
-        }
-    }
-
-    private void validateIdentityNumber(EditText editPatientIdentityNumber) {
-        identityNumber = editPatientIdentityNumber.getText().toString().trim();
-        Pattern pattern = Pattern.compile("(\\d{1,8})([TRWAGMYFPDXBNJZSQVHLCKEtrwagmyfpdxbnjzsqvhlcke])");
-        Matcher matcher = pattern.matcher(identityNumber);
-
-        if (matcher.matches()) {
-            String letter = matcher.group(2);
-            String patternLetters = "TRWAGMYFPDXBNJZSQVHLCKE";
-            int index = Integer.parseInt(matcher.group(1));
-            index = index % 23;
-            String reference = patternLetters.substring(index, index + 1);
-            if (reference.equalsIgnoreCase(letter)) {
-                isValidPatientIdentityNumber = true;
-            } else {
-                editPatientIdentityNumber.requestFocus();
-                editPatientIdentityNumber.setError("Letra del DNI incorrecta");
-                isValidPatientIdentityNumber = false;
-            }
-        } else {
-            editPatientIdentityNumber.requestFocus();
-            editPatientIdentityNumber.setError("DNI no válido");
-            isValidPatientIdentityNumber = false;
         }
     }
 
@@ -475,7 +461,7 @@ public class AddPatient extends AppCompatActivity {
 
     private void validateProfession(EditText editPatientProfession) {
         profession = editPatientProfession.getText().toString().trim();
-        if (editPatientProfession.length() >= 8) {
+        if (profession.length() > 0) {
             isValidPatientProfession = true;
         } else {
             editPatientProfession.requestFocus();

@@ -53,10 +53,17 @@ public class ClinicAdapter extends RecyclerView.Adapter<ClinicAdapter.ViewHolder
         clinic = clinicList.get(holder.getAdapterPosition());
         clinicName = clinic.getName();
         holder.textClinic.setText(clinicName);
-
+        holder.layoutClinic.setBackgroundResource(0);
+        if (sharedPreferences.getString(LATEST_CLINIC, "").equals(clinicName)) {
+            holder.layoutClinic.setBackground(ContextCompat.getDrawable(context, R.drawable.grey_background));
+        } else {
+            holder.layoutClinic.setBackgroundResource(0);
+        }
         holder.layoutClinic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holder.layoutClinic.setBackground(ContextCompat.getDrawable(context, R.drawable.grey_background));
+
                 listener.onClick(holder.getAdapterPosition(), clinic);
             }
         });

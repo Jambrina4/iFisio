@@ -53,11 +53,11 @@
     <string name="permission_needed">Permisos necesarios</string>
     <string name="grant_permission">Para continuar es necesario que actives manualmente los permisos de almacenamiento.\nPermisos -> Almacenamiento</string>
     <string name="text_accept">Aceptar</string>
-    <string name="regular_medication">Medicación Habitual:</string>
-    <string name="medic_conditions">Afecciones Médicas:</string>
-    <string name="regular_exercise">Ejercicio habitual:</string>
-    <string name="surgical_operations">Operaciones quirúrgicas:</string>
-    <string name="medic_examination">Reconocimientos médicos:</string>
+    <string name="regular_medication">Medicación Habitual</string>
+    <string name="medic_conditions">Afecciones Médicas</string>
+    <string name="regular_exercise">Ejercicio habitual</string>
+    <string name="surgical_operations">Operaciones quirúrgicas</string>
+    <string name="medic_examination">Reconocimientos médicos</string>
     <string name="born_date">Fecha de nacimiento:</string>
     <string name="identity_number">DNI:</string>
     <string name="number_phone">Teléfono:</string>

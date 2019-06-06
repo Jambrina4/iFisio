@@ -3,7 +3,9 @@ package com.ojambrina.ifisio.UI.clinics.patients.patientDetail;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -16,8 +18,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,7 +29,13 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.ojambrina.ifisio.R;
-import com.ojambrina.ifisio.adapters.PatientHistoryAdapter;
+import com.ojambrina.ifisio.UI.HomeActivity;
+import com.ojambrina.ifisio.UI.login.LoginActivity;
+import com.ojambrina.ifisio.adapters.PatientMedicConditionsAdapter;
+import com.ojambrina.ifisio.adapters.PatientMedicExaminationAdapter;
+import com.ojambrina.ifisio.adapters.PatientRegularExerciseAdapter;
+import com.ojambrina.ifisio.adapters.PatientRegularMedicationAdapter;
+import com.ojambrina.ifisio.adapters.PatientSurgicalOperationsAdapter;
 import com.ojambrina.ifisio.entities.Patient;
 
 import java.util.ArrayList;
@@ -36,23 +46,26 @@ import javax.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.ojambrina.ifisio.utils.Constants.CLINICS;
 import static com.ojambrina.ifisio.utils.Constants.CLINIC_NAME;
+import static com.ojambrina.ifisio.utils.Constants.PATIENT;
 import static com.ojambrina.ifisio.utils.Constants.PATIENTS;
 import static com.ojambrina.ifisio.utils.Constants.PATIENT_NAME;
+import static com.ojambrina.ifisio.utils.Constants.SPLASH_DISPLAY_LENGTH;
 
 public class HistoryFragment extends Fragment {
 
     //Butterknife
     @BindView(R.id.image_patient)
-    ImageView imagePatient;
+    CircleImageView imagePatient;
     @BindView(R.id.text_patient_name)
     TextView textPatientName;
+    @BindView(R.id.text_patient_surname)
+    TextView textPatientSurname;
     @BindView(R.id.text_born_date)
     TextView textBornDate;
-    @BindView(R.id.text_identity_number)
-    TextView textIdentityNumber;
     @BindView(R.id.text_phone)
     TextView textPhone;
     @BindView(R.id.text_email)
@@ -87,7 +100,11 @@ public class HistoryFragment extends Fragment {
     private Patient patient;
     private String patientName;
     private String clinicName;
-    private PatientHistoryAdapter patientHistoryAdapter;
+    private PatientRegularMedicationAdapter patientRegularMedicationAdapter;
+    private PatientMedicConditionsAdapter patientMedicConditionsAdapter;
+    private PatientRegularExerciseAdapter patientRegularExerciseAdapter;
+    private PatientSurgicalOperationsAdapter patientSurgicalOperationsAdapter;
+    private PatientMedicExaminationAdapter patientMedicExaminationAdapter;
     private List<String> regularMedication = new ArrayList<>();
     private List<String> medicConditions = new ArrayList<>();
     private List<String> regularExercise = new ArrayList<>();
@@ -105,6 +122,7 @@ public class HistoryFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
 
         if (getArguments() != null) {
+            patient = (Patient) getArguments().get(PATIENT);
             patientName = (String) getArguments().get(PATIENT_NAME);
             clinicName = (String) getArguments().get(CLINIC_NAME);
         }
@@ -112,10 +130,24 @@ public class HistoryFragment extends Fragment {
         context = getContext();
 
         setFirebase();
-        getPatientData();
+        setAdapters();
+        printData();
         listeners();
 
         return view;
+    }
+
+    private void setAdapters() {
+        patientRegularMedicationAdapter = new PatientRegularMedicationAdapter(context, patient);
+        recyclerMedication.setAdapter(patientRegularMedicationAdapter);
+        patientMedicConditionsAdapter = new PatientMedicConditionsAdapter(context, patient);
+        recyclerMedicConditions.setAdapter(patientMedicConditionsAdapter);
+        patientRegularExerciseAdapter = new PatientRegularExerciseAdapter(context, patient);
+        recyclerRegularExercise.setAdapter(patientRegularExerciseAdapter);
+        patientSurgicalOperationsAdapter = new PatientSurgicalOperationsAdapter(context, patient);
+        recyclerSurgicalOperations.setAdapter(patientSurgicalOperationsAdapter);
+        patientMedicExaminationAdapter = new PatientMedicExaminationAdapter(context, patient);
+        recyclerMedicExamination.setAdapter(patientMedicExaminationAdapter);
     }
 
     private void listeners() {
@@ -161,78 +193,26 @@ public class HistoryFragment extends Fragment {
         firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
-    private void getPatientData() {
-        firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w("ERROR", "Listen failed.", e);
-                    return;
-                }
-
-                patient = documentSnapshot.toObject(Patient.class);
-
-                printData();
-
-            }
-        });
-        //firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).addSnapshotListener(new EventListener<QuerySnapshot>() {
-        //    @Override
-        //    public void onEvent(@android.support.annotation.Nullable QuerySnapshot value,
-        //                        @android.support.annotation.Nullable FirebaseFirestoreException e) {
-        //        if (e != null) {
-        //            Log.w("ERROR", "Listen failed.", e);
-        //            return;
-        //        }
-
-        //        List<String> list = new ArrayList<>();
-        //        for (QueryDocumentSnapshot doc : value) {
-        //            if (doc.get("name") != null) {
-        //                list.add(doc.getString("name"));
-        //            }
-        //        }
-        //        //patientList.clear();
-        //        //patientList.addAll(list);
-        //        //progressBarPatients.setVisibility(View.GONE);
-        //        //recyclerPatients.setVisibility(View.VISIBLE);
-        //        //patientAdapter.notifyDataSetChanged();
-        //        Log.d("INFO", "Current patients in clinic: " + list);
-        //    }
-        //});
-    }
-
     private void printData() {
-        String fullName = patient.getName() + " " + patient.getSurname();
-        //TODO CALCULAR LA EDAD A PARTIR DE LA FECHA
-        String bornDate = textBornDate.getText() + " " + patient.getBornDate();
-        String identityNumber = textIdentityNumber.getText() + " " + patient.getIdentityNumber();
-        String phone = textPhone.getText() + " " + patient.getPhone();
-        String email = textEmail.getText() + " " + patient.getEmail();
-        String profession = textProfession.getText() + " " + patient.getProfession();
+        //TODO BUG A VECES NO COGE BIEN LOS DATOS
 
+        String name = patient.getName();
+        String surname = patient.getSurname();
+        String bornDate = patient.getBornDate();
+        String phone = patient.getPhone();
+        String email = patient.getEmail();
+        String profession = patient.getProfession();
 
-        //TODO DESCOMENTAR CUANDO CONSIGA ALMACENAR LA IMAGEN
-        //Glide.with(context)
-        //        .load(patient.getProfileImage())
-        //        .into(imagePatient);
+        Glide.with(context)
+                .load(patient.getProfileImage())
+                .into(imagePatient);
 
-        textPatientName.setText(fullName);
+        textPatientName.setText(name);
+        textPatientSurname.setText(surname);
         textBornDate.setText(bornDate);
-        textIdentityNumber.setText(identityNumber);
         textPhone.setText(phone);
         textEmail.setText(email);
         textProfession.setText(profession);
-
-        patientHistoryAdapter = new PatientHistoryAdapter(context, patient.getRegularMedication());
-        recyclerMedication.setAdapter(patientHistoryAdapter);
-        patientHistoryAdapter = new PatientHistoryAdapter(context, patient.getMedicConditions());
-        recyclerMedicConditions.setAdapter(patientHistoryAdapter);
-        patientHistoryAdapter = new PatientHistoryAdapter(context, patient.getRegularExercise());
-        recyclerRegularExercise.setAdapter(patientHistoryAdapter);
-        patientHistoryAdapter = new PatientHistoryAdapter(context, patient.getSurgicalOperations());
-        recyclerSurgicalOperations.setAdapter(patientHistoryAdapter);
-        patientHistoryAdapter = new PatientHistoryAdapter(context, patient.getMedicExamination());
-        recyclerMedicExamination.setAdapter(patientHistoryAdapter);
     }
 
     public void showDialog(int position) {
@@ -250,12 +230,13 @@ public class HistoryFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (editItem.getText().toString().trim().length() != 0) {
                             regularMedication.clear();
+                            regularMedication.addAll(patient.getRegularMedication());
                             regularMedication.add(editItem.getText().toString().trim());
                             patient.setRegularMedication(regularMedication);
                             firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    patientHistoryAdapter.notifyDataSetChanged();
+                                    patientRegularMedicationAdapter.notifyDataSetChanged();
                                 }
                             });
                         }
@@ -267,14 +248,16 @@ public class HistoryFragment extends Fragment {
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (editItem.getText().toString().trim().length() != 0) {
-                            //reasonList.add(editItem.getText().toString().trim());
-                            //session.setReasonList(reasonList);
-                            //firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            //    @Override
-                            //    public void onComplete(@NonNull Task<Void> task) {
-                            //        sessionReasonAdapter.notifyDataSetChanged();
-                            //    }
-                            //});
+                            medicConditions.clear();
+                            medicConditions.addAll(patient.getMedicConditions());
+                            medicConditions.add(editItem.getText().toString().trim());
+                            patient.setMedicConditions(medicConditions);
+                            firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    patientMedicConditionsAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                     }
                 });
@@ -284,14 +267,16 @@ public class HistoryFragment extends Fragment {
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (editItem.getText().toString().trim().length() != 0) {
-                            //reasonList.add(editItem.getText().toString().trim());
-                            //session.setReasonList(reasonList);
-                            //firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            //    @Override
-                            //    public void onComplete(@NonNull Task<Void> task) {
-                            //        sessionReasonAdapter.notifyDataSetChanged();
-                            //    }
-                            //});
+                            regularExercise.clear();
+                            regularExercise.addAll(patient.getRegularExercise());
+                            regularExercise.add(editItem.getText().toString().trim());
+                            patient.setRegularExercise(regularExercise);
+                            firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    patientRegularExerciseAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                     }
                 });
@@ -301,14 +286,16 @@ public class HistoryFragment extends Fragment {
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (editItem.getText().toString().trim().length() != 0) {
-                            //reasonList.add(editItem.getText().toString().trim());
-                            //session.setReasonList(reasonList);
-                            //firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            //    @Override
-                            //    public void onComplete(@NonNull Task<Void> task) {
-                            //        sessionReasonAdapter.notifyDataSetChanged();
-                            //    }
-                            //});
+                            surgicalOperations.clear();
+                            surgicalOperations.addAll(patient.getSurgicalOperations());
+                            surgicalOperations.add(editItem.getText().toString().trim());
+                            patient.setSurgicalOperations(surgicalOperations);
+                            firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    patientSurgicalOperationsAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                     }
                 });
@@ -318,20 +305,20 @@ public class HistoryFragment extends Fragment {
                 dialogBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if (editItem.getText().toString().trim().length() != 0) {
-                            //reasonList.add(editItem.getText().toString().trim());
-                            //session.setReasonList(reasonList);
-                            //firebaseFirestore.collection(CLINICS).document(clinic_name).collection(PATIENTS).document(patientName).collection(SESSION_LIST).document(date).set(session).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            //    @Override
-                            //    public void onComplete(@NonNull Task<Void> task) {
-                            //        sessionReasonAdapter.notifyDataSetChanged();
-                            //    }
-                            //});
+                            medicExamination.clear();
+                            medicExamination.addAll(patient.getMedicExamination());
+                            medicExamination.add(editItem.getText().toString().trim());
+                            patient.setMedicExamination(medicExamination);
+                            firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    patientMedicExaminationAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                     }
                 });
                 break;
-
-
         }
 
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {

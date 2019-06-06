@@ -6,7 +6,7 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_patient"
         android:layout_width="64dp"
         android:layout_height="64dp"

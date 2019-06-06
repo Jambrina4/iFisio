@@ -9,21 +9,26 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ojambrina.ifisio.R;
+import com.ojambrina.ifisio.entities.Patient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PatientHistoryAdapter extends RecyclerView.Adapter<PatientHistoryAdapter.ViewHolder> {
+public class PatientSurgicalOperationsAdapter extends RecyclerView.Adapter<PatientSurgicalOperationsAdapter.ViewHolder> {
 
     private Context context;
-    private List<String> list;
+    private List<String> list = new ArrayList<>();
     private String detail;
+    private Patient patient;
 
-    public PatientHistoryAdapter(Context context, List<String> list) {
+    public PatientSurgicalOperationsAdapter(Context context, Patient patient) {
         this.context = context;
-        this.list = list;
+        this.patient = patient;
+        list.clear();
+        list.addAll(patient.getSurgicalOperations());
     }
 
     @NonNull

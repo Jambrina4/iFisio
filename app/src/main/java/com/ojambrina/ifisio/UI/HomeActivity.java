@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +43,7 @@ import com.ojambrina.ifisio.UI.login.LoginActivity;
 import com.ojambrina.ifisio.adapters.ClinicAdapter;
 import com.ojambrina.ifisio.adapters.PatientAdapter;
 import com.ojambrina.ifisio.entities.Clinic;
+import com.ojambrina.ifisio.entities.Patient;
 import com.ojambrina.ifisio.utils.AppPreferences;
 import com.ojambrina.ifisio.utils.Utils;
 
@@ -109,7 +111,7 @@ public class HomeActivity extends AppCompatActivity {
     //Declarations
     private List<Clinic> clinicList = new ArrayList<>();
     private List<Clinic> clinicListPreferences = new ArrayList<>();
-    private List<String> patientList = new ArrayList<>();
+    private List<Patient> patientList = new ArrayList<>();
     private ClinicAdapter clinicAdapter;
     private DatabaseReference databaseReference;
     private FirebaseFirestore firebaseFirestore;
@@ -193,6 +195,8 @@ public class HomeActivity extends AppCompatActivity {
                     editor.apply();
                 }
 
+                clinicAdapter.notifyDataSetChanged();
+
                 setPatientList();
                 patientAdapter.notifyDataSetChanged();
                 drawerLayout.closeDrawer(Gravity.START);
@@ -243,19 +247,14 @@ public class HomeActivity extends AppCompatActivity {
     private void setPatientList() {
         firebaseFirestore.collection(CLINICS).document(latestClinic).collection(PATIENTS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value,
-                                @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w("ERROR", "Listen failed.", e);
                     return;
                 }
 
-                List<String> list = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : value) {
-                    if (doc.get("name") != null) {
-                        list.add(doc.getString("name"));
-                    }
-                }
+                List<Patient> list = queryDocumentSnapshots.toObjects(Patient.class);
+
                 patientList.clear();
                 patientList.addAll(list);
                 progressBarPatients.setVisibility(View.GONE);
@@ -272,6 +271,38 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("INFO", "Current patients in clinic: " + list);
             }
         });
+
+        //firebaseFirestore.collection(CLINICS).document(latestClinic).collection(PATIENTS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        //    @Override
+        //    public void onEvent(@Nullable QuerySnapshot value,
+        //                        @Nullable FirebaseFirestoreException e) {
+        //        if (e != null) {
+        //            Log.w("ERROR", "Listen failed.", e);
+        //            return;
+        //        }
+
+        //        List<Patient> list = new ArrayList<>();
+        //        for (QueryDocumentSnapshot doc : value) {
+        //            if (doc.get("name") != null) {
+        //                list.add((Patient) doc.get("name"));
+        //            }
+        //        }
+        //        patientList.clear();
+        //        patientList.addAll(list);
+        //        progressBarPatients.setVisibility(View.GONE);
+
+        //        if (patientList.size() == 0) {
+        //            homeTextNoData.setVisibility(View.VISIBLE);
+        //            recyclerPatients.setVisibility(View.GONE);
+        //        } else {
+        //            homeTextNoData.setVisibility(View.GONE);
+        //            recyclerPatients.setVisibility(View.VISIBLE);
+        //        }
+
+        //        patientAdapter.notifyDataSetChanged();
+        //        Log.d("INFO", "Current patients in clinic: " + list);
+        //    }
+        //});
     }
 
     private void drawerListeners() {
@@ -388,6 +419,7 @@ public class HomeActivity extends AppCompatActivity {
         textLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                drawerLayout.closeDrawer(Gravity.START);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(context, LoginActivity.class);
                 startActivity(intent);
@@ -398,6 +430,7 @@ public class HomeActivity extends AppCompatActivity {
         textSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                drawerLayout.closeDrawer(Gravity.START);
                 Toast.makeText(context, "Configuración", Toast.LENGTH_SHORT).show();
             }
         });
