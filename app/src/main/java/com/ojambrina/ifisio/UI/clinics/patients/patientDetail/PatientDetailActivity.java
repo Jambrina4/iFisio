@@ -66,7 +66,6 @@ public class PatientDetailActivity extends AppCompatActivity {
         context = this;
 
         setFirebase();
-        setAdapter();
         getPatientData();
         setToolbar();
         listeners();
@@ -82,7 +81,7 @@ public class PatientDetailActivity extends AppCompatActivity {
                 }
 
                 patient = documentSnapshot.toObject(Patient.class);
-                viewPagerAdapter.notifyDataSetChanged();
+                setAdapter();
             }
         });
     }
@@ -99,7 +98,7 @@ public class PatientDetailActivity extends AppCompatActivity {
     }
 
     private void setAdapter() {
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context, clinic_name, patientName, firebaseFirestore);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), context, patient, clinic_name, patientName, firebaseFirestore);
         tabLayout.setupWithViewPager(pager);
         pager.setAdapter(viewPagerAdapter);
     }

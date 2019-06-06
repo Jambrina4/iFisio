@@ -60,4 +60,10 @@ public class PatientSurgicalOperationsAdapter extends RecyclerView.Adapter<Patie
             ButterKnife.bind(this, itemView);
         }
     }
+
+    public void setData(Patient patient) {
+        list.clear();
+        list.addAll(patient.getSurgicalOperations());
+        notifyDataSetChanged();
+    }
 }

@@ -60,4 +60,10 @@ public class PatientRegularMedicationAdapter extends RecyclerView.Adapter<Patien
             ButterKnife.bind(this, itemView);
         }
     }
+
+    public void setData(Patient patient) {
+        list.clear();
+        list.addAll(patient.getRegularMedication());
+        notifyDataSetChanged();
+    }
 }

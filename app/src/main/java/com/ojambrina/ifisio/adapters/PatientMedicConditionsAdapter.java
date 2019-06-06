@@ -60,4 +60,10 @@ public class PatientMedicConditionsAdapter extends RecyclerView.Adapter<PatientM
             ButterKnife.bind(this, itemView);
         }
     }
+
+    public void setData(Patient patient) {
+        list.clear();
+        list.addAll(patient.getMedicConditions());
+        notifyDataSetChanged();
+    }
 }

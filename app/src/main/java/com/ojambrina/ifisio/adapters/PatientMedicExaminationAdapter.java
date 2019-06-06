@@ -60,4 +60,10 @@ public class PatientMedicExaminationAdapter extends RecyclerView.Adapter<Patient
             ButterKnife.bind(this, itemView);
         }
     }
+
+    public void setData(Patient patient) {
+        list.clear();
+        list.addAll(patient.getMedicExamination());
+        notifyDataSetChanged();
+    }
 }

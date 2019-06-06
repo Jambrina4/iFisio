@@ -131,10 +131,27 @@ public class HistoryFragment extends Fragment {
 
         setFirebase();
         setAdapters();
+        getPatientData();
         printData();
         listeners();
 
+        //TODO Cuando añado un dato nuevo desaparece la información de los demás recyclerviews
+
         return view;
+    }
+
+    private void getPatientData() {
+        firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("ERROR", "Listen failed.", e);
+                    return;
+                }
+
+                patient = documentSnapshot.toObject(Patient.class);
+            }
+        });
     }
 
     private void setAdapters() {
@@ -194,8 +211,6 @@ public class HistoryFragment extends Fragment {
     }
 
     private void printData() {
-        //TODO BUG A VECES NO COGE BIEN LOS DATOS
-
         String name = patient.getName();
         String surname = patient.getSurname();
         String bornDate = patient.getBornDate();
@@ -236,7 +251,7 @@ public class HistoryFragment extends Fragment {
                             firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    patientRegularMedicationAdapter.notifyDataSetChanged();
+                                    patientRegularMedicationAdapter.setData(patient);
                                 }
                             });
                         }
@@ -255,7 +270,7 @@ public class HistoryFragment extends Fragment {
                             firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    patientMedicConditionsAdapter.notifyDataSetChanged();
+                                    patientMedicConditionsAdapter.setData(patient);
                                 }
                             });
                         }
@@ -274,7 +289,7 @@ public class HistoryFragment extends Fragment {
                             firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    patientRegularExerciseAdapter.notifyDataSetChanged();
+                                    patientRegularExerciseAdapter.setData(patient);
                                 }
                             });
                         }
@@ -293,7 +308,7 @@ public class HistoryFragment extends Fragment {
                             firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    patientSurgicalOperationsAdapter.notifyDataSetChanged();
+                                    patientSurgicalOperationsAdapter.setData(patient);
                                 }
                             });
                         }
@@ -312,7 +327,7 @@ public class HistoryFragment extends Fragment {
                             firebaseFirestore.collection(CLINICS).document(clinicName).collection(PATIENTS).document(patientName).set(patient).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    patientMedicExaminationAdapter.notifyDataSetChanged();
+                                    patientMedicExaminationAdapter.setData(patient);
                                 }
                             });
                         }
